@@ -56,6 +56,10 @@
     return Object.values(save.dex).reduce((a, d) => a + (d.shiny || 0), 0);
   }
 
+  function shinySpeciesCount() {
+    return NS.SPECIES.filter(s => (save.dex[s.id]?.shiny || 0) > 0).length;
+  }
+
   function caughtSpeciesCount() {
     return NS.SPECIES.filter(s => save.dex[s.id]?.count > 0).length;
   }
@@ -67,10 +71,16 @@
   }
 
   function refreshMenu() {
-    $('menuCoins').textContent = save.coins;
-    $('menuDex').textContent = `${caughtSpeciesCount()} / ${NS.SPECIES.length}`;
-    $('menuShinies').textContent = shinyTotal();
-    $('menuPlaytime').textContent = formatPlaytime(save.totalRunSeconds||0);
+    const topCoins = $('topCoins');
+    const topDex = $('topDex');
+    const topShinyDex = $('topShinyDex');
+    const topPlaytime = $('topPlaytime');
+
+    if (topCoins) topCoins.textContent = save.coins;
+    if (topDex) topDex.textContent = `${caughtSpeciesCount()} / ${NS.SPECIES.length}`;
+    if (topShinyDex) topShinyDex.textContent = `${shinySpeciesCount()} / ${NS.SPECIES.length}`;
+    if (topPlaytime) topPlaytime.textContent = formatPlaytime(save.totalRunSeconds || 0);
+
     $('menuIntro').textContent = `Explora, prepara el encuentro y completa la Pokédex. Esta versión incluye ${NS.SPECIES.length} especies de Kanto.`;
     const habitatLevel=save.upgrades.habitatLicense||0;
     $('dexIntro').textContent = `${NS.SPECIES.length} especies de Kanto. Licencia de hábitats: nivel ${habitatLevel}/4. Cada especie aparece con más frecuencia en sus zonas naturales.`;
@@ -381,8 +391,23 @@
   $('newRunBtn').onclick = newRun;
   $('pokedexBtn').onclick = () => { buildDex(); show('pokedexScreen'); };
   $('shopBtn').onclick = () => { buildShop(); show('shopScreen'); };
-  $('profileBtn').onclick = async () => { show('profileScreen'); await buildProfile(); };
-  $('settingsBtn').onclick = () => { refreshAudioSettings(); show('settingsScreen'); };
+
+  const openGameProfile = async () => {
+    $('accountCloseBtn')?.click();
+    show('profileScreen');
+    await buildProfile();
+  };
+
+  const openSettings = () => {
+    $('accountCloseBtn')?.click();
+    refreshAudioSettings();
+    show('settingsScreen');
+  };
+
+  $('accountGameProfileBtn').onclick = openGameProfile;
+  $('accountSettingsBtn').onclick = openSettings;
+  $('settingsTopBtn').onclick = openSettings;
+
   $('importTrainerPackBtn').onclick = importTrainerPack;
   $('clearTrainerPackBtn').onclick = clearTrainerPack;
   $('summaryBackBtn').onclick = () => {

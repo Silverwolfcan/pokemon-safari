@@ -1,23 +1,20 @@
-ARCHIVOS MODIFICADOS
+Sustituye estos archivos:
 
-Sustituye:
-- E:\PokemonSafari\index.html
-- E:\PokemonSafari\style.css
-- E:\PokemonSafari\js\firebase-auth.js
+E:\PokemonSafari\index.html
+E:\PokemonSafari\style.css
+E:\PokemonSafari\js\ui.js
+E:\PokemonSafari\js\firebase-auth.js
 
-No es necesario modificar ui.js para esta iteración.
-
-NOVEDADES
-- Nueva barra superior con estética de juego.
-- Botón de cuenta arriba a la derecha.
-- Avatar de Google cuando está disponible.
-- Nombre de Google o "Invitado".
-- Panel de cuenta con correo, tipo de cuenta y estado de guardado.
-- Accesos a Perfil de juego y Ajustes.
-- Cerrar sesión.
-- Renovación visual de menús y paneles.
+CAMBIOS
+- Borrar progreso pasa al menú de cuenta.
+- Ajustes desaparece del menú principal y aparece arriba a la derecha.
+- Perfil de juego desaparece del menú principal y queda dentro de la cuenta.
+- Monedas, Pokédex, Shinydex y tiempo aparecen en la cabecera superior central.
+- Shinydex muestra especies shiny registradas / total de especies.
+- El texto descriptivo del botón naranja usa negro para ganar contraste.
+- El menú principal queda reducido a Nueva expedición, Pokédex y Tienda.
 
 Después:
 git add .
-git commit -m "Renovar interfaz y añadir menu de cuenta"
+git commit -m "Reorganizar menu principal y progreso superior"
 git push

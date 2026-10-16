@@ -14,6 +14,32 @@
         <span class="sub">Pokémon: SpriteCollab · entrenador: Openmon/CC0</span>
       </div>
 
+      <div id="topProgressStats" class="top-progress-stats" aria-label="Progreso del jugador">
+        <div class="progress-pill" title="Monedas">
+          <span class="progress-icon">●</span>
+          <span class="progress-label">Monedas</span>
+          <strong id="topCoins">0</strong>
+        </div>
+
+        <div class="progress-pill" title="Pokédex">
+          <span class="progress-icon">▣</span>
+          <span class="progress-label">Pokédex</span>
+          <strong id="topDex">0 / 151</strong>
+        </div>
+
+        <div class="progress-pill" title="Shinydex">
+          <span class="progress-icon shiny-progress-icon">★</span>
+          <span class="progress-label">Shinydex</span>
+          <strong id="topShinyDex">0 / 151</strong>
+        </div>
+
+        <div class="progress-pill" title="Tiempo total en expediciones">
+          <span class="progress-icon">◷</span>
+          <span class="progress-label">Tiempo</span>
+          <strong id="topPlaytime">0 min</strong>
+        </div>
+      </div>
+
       <div class="topbar-actions">
         <div class="top-pill save-pill" title="Estado de guardado">
           <span class="top-pill-icon">☁</span>
@@ -24,6 +50,10 @@
 
         <button id="audioToggleBtn" class="top-icon-btn audio-toggle" type="button" title="Activar o silenciar audio">
           🔊
+        </button>
+
+        <button id="settingsTopBtn" class="top-icon-btn" type="button" title="Ajustes" aria-label="Abrir ajustes">
+          ⚙
         </button>
 
         <button id="accountBtn" class="account-pill" type="button" aria-haspopup="dialog" aria-controls="accountPanel">
@@ -73,28 +103,6 @@
               <span class="menu-action-icon">⬆</span>
               <span><strong>Tienda</strong><small>Mejora futuras expediciones</small></span>
             </button>
-
-            <button id="profileBtn" class="menu-action">
-              <span class="menu-action-icon">◆</span>
-              <span><strong>Perfil de juego</strong><small>Entrenador y estadísticas</small></span>
-            </button>
-
-            <button id="settingsBtn" class="menu-action">
-              <span class="menu-action-icon">⚙</span>
-              <span><strong>Ajustes</strong><small>Sonido y preferencias</small></span>
-            </button>
-
-            <button id="resetBtn" class="danger ghost menu-wide menu-action">
-              <span class="menu-action-icon">↺</span>
-              <span><strong>Borrar progreso</strong><small>Reinicia los datos de juego</small></span>
-            </button>
-          </div>
-
-          <div class="profile-row">
-            <div><span class="label">Monedas</span><strong id="menuCoins">0</strong></div>
-            <div><span class="label">Pokédex</span><strong id="menuDex">0 / 0</strong></div>
-            <div><span class="label">Shinies</span><strong id="menuShinies">0</strong></div>
-            <div><span class="label">Tiempo en expediciones</span><strong id="menuPlaytime">0:00</strong></div>
           </div>
         </div>
       </section>
@@ -271,6 +279,7 @@
       <div class="account-actions">
         <button id="accountGameProfileBtn" type="button">Perfil de juego</button>
         <button id="accountSettingsBtn" type="button">Ajustes</button>
+        <button id="resetBtn" class="danger ghost" type="button">Borrar progreso</button>
         <button id="logoutBtn" class="danger" type="button">Cerrar sesión</button>
       </div>
 

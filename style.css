@@ -78,6 +78,57 @@ button.ghost { background: rgba(8,24,48,.42); }
   min-width:0;
 }
 
+.top-progress-stats {
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  max-width:52vw;
+  pointer-events:none;
+}
+
+.progress-pill {
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+  color:#f7fbff;
+  background:linear-gradient(180deg,rgba(26,57,99,.98),rgba(12,35,70,.98));
+  border:2px solid rgba(185,221,255,.72);
+  box-shadow:0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+.progress-pill strong {
+  font-size:12px;
+  font-variant-numeric:tabular-nums;
+}
+
+.progress-icon {
+  display:grid;
+  place-items:center;
+  min-width:18px;
+  color:#ffd55b;
+  font-size:12px;
+  font-weight:900;
+}
+
+.shiny-progress-icon { color:#ffe85c; }
+
+.progress-label {
+  color:#93b3d3;
+  font-size:9px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
 .top-pill,
 .account-pill,
 .top-icon-btn {
@@ -652,4 +703,77 @@ p { color:var(--text-soft); line-height:1.55; }
   .brand strong { font-size:15px; }
   .account-overlay { padding:70px 10px 10px; }
   .account-info-grid { grid-template-columns:1fr; }
+}
+
+
+/* Refinamiento del menú principal */
+.safari-menu-buttons {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  max-width:760px;
+}
+
+.safari-menu-buttons .menu-action {
+  min-height:86px;
+}
+
+.menu-action.primary small {
+  color:#121821;
+  font-weight:700;
+}
+
+.menu-action.primary .menu-action-icon {
+  color:#1b2130;
+  background:rgba(255,255,255,.24);
+  border-color:rgba(75,55,8,.24);
+}
+
+/* El progreso vive en la cabecera, no dentro del panel central. */
+.main-menu-panel {
+  max-width:860px;
+}
+
+/* Botón de borrado dentro de la cuenta */
+.account-actions #resetBtn {
+  margin-top:3px;
+}
+
+/* Adaptación de la nueva cabecera */
+@media (max-width:1500px) {
+  .progress-label { display:none; }
+  .top-progress-stats { max-width:46vw; }
+}
+
+@media (max-width:1180px) {
+  .save-pill,
+  .music-now { display:none; }
+
+  .top-progress-stats {
+    position:static;
+    transform:none;
+    margin-left:auto;
+    max-width:none;
+  }
+
+  .brand { flex:1 1 auto; }
+  .topbar-actions { flex:0 0 auto; }
+}
+
+@media (max-width:860px) {
+  .progress-pill:nth-child(4) { display:none; }
+  .safari-menu-buttons { grid-template-columns:1fr; max-width:560px; }
+  .safari-menu-buttons .menu-action { min-height:70px; }
+}
+
+@media (max-width:650px) {
+  .top-progress-stats { gap:4px; }
+  .progress-pill {
+    min-height:34px;
+    padding:5px 7px;
+  }
+  .progress-pill strong { font-size:10px; }
+  .progress-icon { min-width:14px; font-size:10px; }
+}
+
+@media (max-width:520px) {
+  .top-progress-stats .progress-pill:nth-child(3) { display:none; }
 }

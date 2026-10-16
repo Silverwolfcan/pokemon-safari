@@ -217,15 +217,6 @@
       }
     });
 
-    accountGameProfileBtn?.addEventListener("click", () => {
-      closeAccountPanel();
-      document.getElementById("profileBtn")?.click();
-    });
-
-    accountSettingsBtn?.addEventListener("click", () => {
-      closeAccountPanel();
-      document.getElementById("settingsBtn")?.click();
-    });
 
     logoutBtn?.addEventListener("click", async () => {
       logoutBtn.disabled = true;
