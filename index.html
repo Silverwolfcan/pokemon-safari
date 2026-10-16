@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pokémon Safari MVP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <strong>Pokémon Safari MVP</strong>
+        <span class="sub">Pokémon: SpriteCollab · entrenador: Openmon/CC0</span>
+      </div>
+      <div class="topbar-actions">
+        <span id="musicNow" class="music-now">Sin música</span>
+        <button id="audioToggleBtn" class="audio-toggle" type="button">Audio: ON</button>
+        <div id="saveStatus" class="save-status">Guardado local</div>
+      </div>
+    </header>
+
+    <main>
+      <section id="menuScreen" class="screen menu-screen active">
+        <div class="panel hero-panel">
+          <h1>Safari de Kanto</h1>
+          <p id="menuIntro">Explora, prepara el encuentro y completa la Pokédex.</p>
+          <div class="menu-buttons">
+            <button id="newRunBtn" class="primary">Nueva expedición</button>
+            <button id="pokedexBtn">Pokédex</button>
+            <button id="shopBtn">Tienda</button>
+            <button id="profileBtn">Perfil</button>
+            <button id="settingsBtn">Ajustes</button>
+            <button id="resetBtn" class="danger ghost menu-wide">Borrar progreso</button>
+          </div>
+          <div class="profile-row">
+            <div><span class="label">Monedas</span><strong id="menuCoins">0</strong></div>
+            <div><span class="label">Pokédex</span><strong id="menuDex">0 / 0</strong></div>
+            <div><span class="label">Shinies</span><strong id="menuShinies">0</strong></div>
+            <div><span class="label">Tiempo en expediciones</span><strong id="menuPlaytime">0:00</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen game-screen">
+        <div class="game-wrap">
+          <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+          <div id="hud" class="hud">
+            <div class="hud-box"><span>Poké Balls</span><strong id="ballsHud">0</strong></div>
+            <div class="hud-box"><span>Pasos</span><strong id="stepsHud">0</strong></div>
+            <div class="hud-box"><span>Tiempo</span><strong id="timeHud">0:00</strong></div>
+            <div class="hud-box habitat-hud"><span>Hábitat</span><strong id="habitatHud">Pradera</strong></div>
+            <div class="hud-box"><span>Herramienta</span><strong id="toolHud">Cebo</strong></div>
+            <div class="hud-box"><span>Cebo</span><strong id="baitHud">0</strong></div>
+            <div class="hud-box"><span>Piedras</span><strong id="rocksHud">0</strong></div>
+            <div class="hud-box"><span>Capturas</span><strong id="capturesHud">0</strong></div>
+          </div>
+
+          <div class="help-box">
+            WASD / Flechas: mover · Izq.: Poké Ball · Der.: cebo/piedra · Rueda: cambiar herramienta · Golpea nodos con ! usando piedra · Esc: abandonar
+          </div>
+
+          <div id="chargeBar" class="charge hidden"><div id="chargeFill"></div></div>
+          <div id="toast" class="toast hidden"></div>
+        </div>
+      </section>
+
+      <section id="pokedexScreen" class="screen">
+        <div class="panel wide-panel">
+          <div class="section-head">
+            <div>
+              <h2>Pokédex de Kanto</h2>
+              <p id="dexIntro">Especies disponibles en este prototipo.</p>
+            </div>
+            <button class="backBtn">Volver</button>
+          </div>
+          <div class="dex-toolbar">
+            <input id="dexSearch" class="dex-search" type="search" placeholder="Buscar por nombre o nº..." autocomplete="off" />
+            <select id="dexStatusFilter" aria-label="Estado de captura">
+              <option value="all">Todos los Pokémon</option>
+              <option value="caught">Capturados</option>
+              <option value="uncaught">No capturados</option>
+              <option value="shiny">Con shiny capturado</option>
+            </select>
+            <select id="dexRarityFilter" aria-label="Rareza">
+              <option value="all">Todas las rarezas</option>
+              <option value="common">Común</option>
+              <option value="uncommon">Poco común</option>
+              <option value="rare">Raro</option>
+              <option value="legendary">Legendario</option>
+            </select>
+            <select id="dexHabitatFilter" aria-label="Hábitat"><option value="all">Todos los biomas</option></select>
+            <select id="dexTypeFilter" aria-label="Tipo"><option value="all">Todos los tipos</option></select>
+            <span id="dexResultCount" class="dex-result-count"></span>
+          </div>
+          <div id="pokedexGrid" class="dex-grid"></div>
+        </div>
+      </section>
+
+      <section id="shopScreen" class="screen">
+        <div class="panel wide-panel">
+          <div class="section-head">
+            <div><h2>Tienda Safari</h2><p>Las mejoras son permanentes y se aplican a las siguientes expediciones.</p></div>
+            <button class="backBtn">Volver</button>
+          </div>
+          <div class="shop-summary">Monedas: <strong id="shopCoins">0</strong></div>
+          <div id="shopGrid" class="shop-grid"></div>
+        </div>
+      </section>
+
+      <section id="profileScreen" class="screen">
+        <div class="panel wide-panel">
+          <div class="section-head">
+            <div>
+              <h2>Perfil</h2>
+              <p>Elige el aspecto de tu entrenador y consulta tus estadísticas permanentes.</p>
+            </div>
+            <button class="backBtn">Volver</button>
+          </div>
+
+          <div class="profile-layout">
+            <div class="profile-main">
+              <div id="trainerPackPanel" class="trainer-pack-panel">
+                <div>
+                  <h3>Pack Openmon de entrenadores</h3>
+                  <p>El pack oficial contiene 15 personajes animados CC0. itch.io no ofrece hotlink estable, así que se importa una sola vez y se guarda localmente en el navegador.</p>
+                </div>
+                <div class="pack-actions">
+                  <a id="openmonLink" class="button-link" href="https://screensmith.itch.io/openmon-npc-sprites-set-1" target="_blank" rel="noopener">Abrir pack oficial</a>
+                  <label class="file-label">Set 1<input id="trainerSet1Input" type="file" accept="image/png" /></label>
+                  <label class="file-label">Set 2<input id="trainerSet2Input" type="file" accept="image/png" /></label>
+                  <button id="importTrainerPackBtn">Importar PNG seleccionados</button>
+                  <button id="clearTrainerPackBtn" class="ghost">Quitar pack importado</button>
+                </div>
+                <div id="trainerPackStatus" class="pack-status"></div>
+              </div>
+
+              <h3>Entrenador seleccionado</h3>
+              <div id="trainerGrid" class="trainer-grid"></div>
+            </div>
+
+            <aside class="profile-stats">
+              <h3>Estadísticas</h3>
+              <div><span class="label">Pokémon registrados</span><strong id="profileDex">0 / 0</strong></div>
+              <div><span class="label">Capturas totales</span><strong id="profileCaptures">0</strong></div>
+              <div><span class="label">Shinies capturados</span><strong id="profileShinies">0</strong></div>
+              <div><span class="label">Expediciones</span><strong id="profileRuns">0</strong></div>
+              <div><span class="label">Tiempo en expediciones</span><strong id="profilePlaytime">0:00</strong></div>
+              <div><span class="label">Monedas</span><strong id="profileCoins">0</strong></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="settingsScreen" class="screen">
+        <div class="panel settings-panel">
+          <div class="section-head">
+            <div><h2>Ajustes de sonido</h2><p>Los cambios se guardan automáticamente.</p></div>
+            <button class="backBtn">Volver</button>
+          </div>
+          <div class="audio-settings-grid">
+            <label><span>Volumen global</span><strong id="masterVolumeValue">85%</strong><input id="masterVolumeSlider" type="range" min="0" max="100" step="1" /></label>
+            <label><span>Música</span><strong id="musicVolumeValue">40%</strong><input id="musicVolumeSlider" type="range" min="0" max="100" step="1" /></label>
+            <label><span>Efectos</span><strong id="sfxVolumeValue">62%</strong><input id="sfxVolumeSlider" type="range" min="0" max="100" step="1" /></label>
+          </div>
+          <button id="muteAllBtn" class="primary">Silenciar todo</button>
+          <p class="settings-note">La música se precarga al abrir el juego, pero el navegador exige una primera interacción antes de reproducir audio.</p>
+        </div>
+      </section>
+
+      <section id="summaryScreen" class="screen">
+        <div class="panel summary-panel">
+          <h2 id="summaryTitle">Expedición terminada</h2>
+          <div id="summaryStats" class="summary-stats"></div>
+          <h3>Nuevas entradas</h3>
+          <div id="summaryNew" class="summary-new"></div>
+          <button id="summaryBackBtn" class="primary">Volver al menú</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/trainers.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
