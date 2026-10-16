@@ -9,44 +9,87 @@
 <body>
   <div id="app">
     <header class="topbar">
-      <div>
+      <div class="brand">
         <strong>Pokémon Safari MVP</strong>
         <span class="sub">Pokémon: SpriteCollab · entrenador: Openmon/CC0</span>
       </div>
+
       <div class="topbar-actions">
+        <div class="top-pill save-pill" title="Estado de guardado">
+          <span class="top-pill-icon">☁</span>
+          <span id="saveStatus" class="save-status">Guardado local</span>
+        </div>
+
         <span id="musicNow" class="music-now">Sin música</span>
-        <button id="audioToggleBtn" class="audio-toggle" type="button">Audio: ON</button>
-        <div id="saveStatus" class="save-status">Guardado local</div>
+
+        <button id="audioToggleBtn" class="top-icon-btn audio-toggle" type="button" title="Activar o silenciar audio">
+          🔊
+        </button>
+
+        <button id="accountBtn" class="account-pill" type="button" aria-haspopup="dialog" aria-controls="accountPanel">
+          <span id="accountAvatar" class="account-avatar">?</span>
+          <span id="accountTopName" class="account-top-name">Cuenta</span>
+          <span class="account-chevron">▾</span>
+        </button>
       </div>
     </header>
 
     <main>
       <section id="loginScreen" class="screen active">
-        <div class="panel hero-panel">
+        <div class="panel hero-panel login-panel">
+          <div class="login-badge">SAFARI DE KANTO</div>
           <h1>Pokémon Safari</h1>
-          <p>Elige cómo quieres jugar.</p>
+          <p>Explora, captura Pokémon y completa tu colección.</p>
 
-          <div class="menu-buttons">
+          <div class="menu-buttons login-buttons">
             <button id="loginGoogleBtn" class="primary">Iniciar sesión con Google</button>
             <button id="loginGuestBtn">Jugar como invitado</button>
           </div>
 
-          <p id="loginStatus" class="save-status"></p>
+          <p id="loginStatus" class="login-status"></p>
         </div>
       </section>
 
       <section id="menuScreen" class="screen menu-screen">
-        <div class="panel hero-panel">
-          <h1>Safari de Kanto</h1>
-          <p id="menuIntro">Explora, prepara el encuentro y completa la Pokédex.</p>
-          <div class="menu-buttons">
-            <button id="newRunBtn" class="primary">Nueva expedición</button>
-            <button id="pokedexBtn">Pokédex</button>
-            <button id="shopBtn">Tienda</button>
-            <button id="profileBtn">Perfil</button>
-            <button id="settingsBtn">Ajustes</button>
-            <button id="resetBtn" class="danger ghost menu-wide">Borrar progreso</button>
+        <div class="panel hero-panel main-menu-panel">
+          <div class="menu-title-block">
+            <span class="menu-eyebrow">MUNDO SAFARI</span>
+            <h1>Safari de Kanto</h1>
+            <p id="menuIntro">Explora, prepara el encuentro y completa la Pokédex.</p>
           </div>
+
+          <div class="menu-buttons safari-menu-buttons">
+            <button id="newRunBtn" class="primary menu-action">
+              <span class="menu-action-icon">▶</span>
+              <span><strong>Nueva expedición</strong><small>Entra en la zona Safari</small></span>
+            </button>
+
+            <button id="pokedexBtn" class="menu-action">
+              <span class="menu-action-icon">▣</span>
+              <span><strong>Pokédex</strong><small>Consulta tus capturas</small></span>
+            </button>
+
+            <button id="shopBtn" class="menu-action">
+              <span class="menu-action-icon">⬆</span>
+              <span><strong>Tienda</strong><small>Mejora futuras expediciones</small></span>
+            </button>
+
+            <button id="profileBtn" class="menu-action">
+              <span class="menu-action-icon">◆</span>
+              <span><strong>Perfil de juego</strong><small>Entrenador y estadísticas</small></span>
+            </button>
+
+            <button id="settingsBtn" class="menu-action">
+              <span class="menu-action-icon">⚙</span>
+              <span><strong>Ajustes</strong><small>Sonido y preferencias</small></span>
+            </button>
+
+            <button id="resetBtn" class="danger ghost menu-wide menu-action">
+              <span class="menu-action-icon">↺</span>
+              <span><strong>Borrar progreso</strong><small>Reinicia los datos de juego</small></span>
+            </button>
+          </div>
+
           <div class="profile-row">
             <div><span class="label">Monedas</span><strong id="menuCoins">0</strong></div>
             <div><span class="label">Pokédex</span><strong id="menuDex">0 / 0</strong></div>
@@ -127,7 +170,7 @@
         <div class="panel wide-panel">
           <div class="section-head">
             <div>
-              <h2>Perfil</h2>
+              <h2>Perfil de juego</h2>
               <p>Elige el aspecto de tu entrenador y consulta tus estadísticas permanentes.</p>
             </div>
             <button class="backBtn">Volver</button>
@@ -138,7 +181,7 @@
               <div id="trainerPackPanel" class="trainer-pack-panel">
                 <div>
                   <h3>Pack Openmon de entrenadores</h3>
-                  <p>El pack oficial contiene 15 personajes animados CC0. itch.io no ofrece hotlink estable, así que se importa una sola vez y se guarda localmente en el navegador.</p>
+                  <p>El pack oficial contiene personajes animados CC0. Se importa una sola vez y se guarda localmente en el navegador.</p>
                 </div>
                 <div class="pack-actions">
                   <a id="openmonLink" class="button-link" href="https://screensmith.itch.io/openmon-npc-sprites-set-1" target="_blank" rel="noopener">Abrir pack oficial</a>
@@ -167,7 +210,6 @@
         </div>
       </section>
 
-
       <section id="settingsScreen" class="screen">
         <div class="panel settings-panel">
           <div class="section-head">
@@ -195,26 +237,66 @@
       </section>
     </main>
   </div>
-  <!-- Firebase SDK (compat, para mantener el proyecto con scripts clásicos) -->
- <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore-compat.js"></script>
 
+  <!-- Panel de cuenta -->
+  <div id="accountOverlay" class="account-overlay hidden" aria-hidden="true">
+    <aside id="accountPanel" class="account-panel" role="dialog" aria-modal="true" aria-labelledby="accountPanelTitle">
+      <div class="account-panel-head">
+        <div>
+          <span class="account-kicker">CUENTA</span>
+          <h2 id="accountPanelTitle">Tu cuenta</h2>
+        </div>
+        <button id="accountCloseBtn" class="account-close-btn" type="button" aria-label="Cerrar">×</button>
+      </div>
 
-  <!-- Configuración y autenticación -->
- <script src="js/firebase-config.js"></script>
-<script src="js/data.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/firebase-storage.js"></script>
-<script src="js/firebase-auth.js"></script>
+      <div class="account-identity">
+        <div id="accountPanelAvatar" class="account-avatar account-avatar-large">?</div>
+        <div class="account-identity-text">
+          <strong id="accountDisplayName">Jugador</strong>
+          <span id="accountEmail">Sin correo asociado</span>
+        </div>
+      </div>
+
+      <div class="account-info-grid">
+        <div>
+          <span class="account-info-label">Tipo de cuenta</span>
+          <strong id="accountType">Invitado</strong>
+        </div>
+        <div>
+          <span class="account-info-label">Guardado</span>
+          <strong id="accountSaveState">Local</strong>
+        </div>
+      </div>
+
+      <div class="account-actions">
+        <button id="accountGameProfileBtn" type="button">Perfil de juego</button>
+        <button id="accountSettingsBtn" type="button">Ajustes</button>
+        <button id="logoutBtn" class="danger" type="button">Cerrar sesión</button>
+      </div>
+
+      <p id="accountMessage" class="account-message"></p>
+    </aside>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore-compat.js"></script>
+
+  <!-- Configuración y guardado -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/firebase-storage.js"></script>
+  <script src="js/firebase-auth.js"></script>
 
   <!-- Juego -->
-<script src="js/audio.js"></script>
-<script src="js/sprites.js"></script>
-<script src="js/trainers.js"></script>
-<script src="js/world.js"></script>
-<script src="js/entities.js"></script>
-<script src="js/game.js"></script>
-<script src="js/ui.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/trainers.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
 </body>
 </html>
