@@ -21,7 +21,21 @@
     </header>
 
     <main>
-      <section id="menuScreen" class="screen menu-screen active">
+      <section id="loginScreen" class="screen active">
+        <div class="panel hero-panel">
+          <h1>Pokémon Safari</h1>
+          <p>Elige cómo quieres jugar.</p>
+
+          <div class="menu-buttons">
+            <button id="loginGoogleBtn" class="primary">Iniciar sesión con Google</button>
+            <button id="loginGuestBtn">Jugar como invitado</button>
+          </div>
+
+          <p id="loginStatus" class="save-status"></p>
+        </div>
+      </section>
+
+      <section id="menuScreen" class="screen menu-screen">
         <div class="panel hero-panel">
           <h1>Safari de Kanto</h1>
           <p id="menuIntro">Explora, prepara el encuentro y completa la Pokédex.</p>
@@ -181,7 +195,15 @@
       </section>
     </main>
   </div>
+  <!-- Firebase SDK (compat, para mantener el proyecto con scripts clásicos) -->
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth-compat.js"></script>
 
+  <!-- Configuración y autenticación -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-auth.js"></script>
+
+  <!-- Juego -->
   <script src="js/data.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/audio.js"></script>
