@@ -56,7 +56,7 @@
       return;
     }
 
-    let authResolved = false;
+    let processingAuth = false;
 
     function setBusy(isBusy) {
       googleBtn.disabled = isBusy;
@@ -99,10 +99,9 @@
 
       try {
         await NS.AuthService.loginWithGoogle();
-        showMenu();
+        // onAuthStateChanged termina la sincronización y abre el menú.
       } catch (error) {
         status.textContent = readableError(error);
-      } finally {
         setBusy(false);
       }
     });
@@ -113,26 +112,45 @@
 
       try {
         await NS.AuthService.loginAsGuest();
-        showMenu();
+        // onAuthStateChanged termina la sincronización y abre el menú.
       } catch (error) {
         status.textContent = readableError(error);
-      } finally {
         setBusy(false);
       }
     });
 
-    NS.AuthService.onAuthChanged((user) => {
-      authResolved = true;
+    NS.AuthService.onAuthChanged(async (user) => {
+      if (processingAuth) return;
+      processingAuth = true;
 
-      if (user) {
+      try {
+        if (!user) {
+          setBusy(false);
+          showLogin();
+          return;
+        }
+
+        status.textContent = "Cargando progreso...";
+
+        if (NS.CloudSave) {
+          const result = await NS.CloudSave.syncCurrentUser();
+
+          // El resto del juego carga el save de forma síncrona al arrancar.
+          // Si Firestore ha sustituido el guardado local, recargamos una vez
+          // para que todas las pantallas utilicen inmediatamente esos datos.
+          if (result.changed) {
+            window.location.reload();
+            return;
+          }
+        }
+
+        setBusy(false);
         showMenu();
-      } else {
-        showLogin();
+      } finally {
+        processingAuth = false;
       }
     });
 
-    if (!authResolved) {
-      showLogin();
-    }
+    showLogin();
   });
 })();

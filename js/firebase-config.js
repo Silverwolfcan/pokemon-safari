@@ -15,3 +15,4 @@ if (!firebase.apps.length) {
 
 window.SafariGame.firebaseConfig = firebaseConfig;
 window.SafariGame.firebaseAuth = firebase.auth();
+window.SafariGame.firestore = firebase.firestore();

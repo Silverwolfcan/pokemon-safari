@@ -37,38 +37,70 @@
     };
   }
 
+  function normalizeSave(data) {
+    const parsed = data || {};
+    const upgrades = Object.assign(blankUpgrades(), parsed.upgrades || {});
+
+    // Migración automática desde versiones anteriores.
+    if ((parsed.upgrades?.rareLicense || 0) > 0 && upgrades.habitatLicense === 0) {
+      upgrades.habitatLicense = 1;
+    }
+
+    return Object.assign(blankSave(), parsed, {
+      upgrades,
+      dex: parsed.dex || {},
+      profile: Object.assign(blankProfile(), parsed.profile || {}, {
+        trainerSheets: Object.assign(
+          blankProfile().trainerSheets,
+          parsed.profile?.trainerSheets || {}
+        )
+      })
+    });
+  }
+
+  function saveLocalOnly(data) {
+    localStorage.setItem(KEY, JSON.stringify(normalizeSave(data)));
+  }
+
   NS.Storage = {
     load() {
       try {
         const raw = localStorage.getItem(KEY);
         if (!raw) return blankSave();
-        const parsed = JSON.parse(raw);
-        const upgrades = Object.assign(blankUpgrades(), parsed.upgrades || {});
-
-        // Migración automática desde versiones anteriores.
-        if ((parsed.upgrades?.rareLicense || 0) > 0 && upgrades.habitatLicense === 0) {
-          upgrades.habitatLicense = 1;
-        }
-
-        return Object.assign(blankSave(), parsed, {
-          upgrades,
-          dex: parsed.dex || {},
-          profile: Object.assign(blankProfile(), parsed.profile || {}, {
-            trainerSheets: Object.assign(blankProfile().trainerSheets, parsed.profile?.trainerSheets || {})
-          })
-        });
+        return normalizeSave(JSON.parse(raw));
       } catch {
         return blankSave();
       }
     },
 
     save(data) {
-      localStorage.setItem(KEY, JSON.stringify(data));
+      const normalized = normalizeSave(data);
+      saveLocalOnly(normalized);
+
+      // El juego sigue funcionando aunque Firebase no esté disponible.
+      if (NS.CloudSave && typeof NS.CloudSave.queueSave === 'function') {
+        NS.CloudSave.queueSave(normalized);
+      }
+    },
+
+    saveLocalOnly(data) {
+      saveLocalOnly(data);
+    },
+
+    normalize(data) {
+      return normalizeSave(data);
     },
 
     reset() {
+      const fresh = blankSave();
       localStorage.removeItem(KEY);
-      return blankSave();
+
+      // Mantiene el reset también en la nube.
+      if (NS.CloudSave && typeof NS.CloudSave.queueSave === 'function') {
+        NS.CloudSave.queueSave(fresh);
+      }
+
+      return fresh;
     }
   };
 })();
