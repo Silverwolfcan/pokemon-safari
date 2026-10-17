@@ -1,6 +1,14 @@
+@font-face {
+  font-family:"m6x11";
+  src:url("assets/fonts/m6x11.ttf") format("truetype");
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
+
 :root {
   color-scheme: dark;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:"m6x11", monospace;
   background: #08111f;
   color: #f7fbff;
   --bg: #08111f;
@@ -14,6 +22,10 @@
   --gold-dark: #c58a18;
   --danger: #ff8585;
   --green: #4cc57a;
+  --font-pixel:"m6x11", monospace;
+  --font-ui:"m6x11", monospace;
+  --font-numbers:"m6x11", monospace;
+  --pixel-icon-sheet: url("assets/ui/pixel-icons.png");
 }
 
 * { box-sizing: border-box; }
@@ -322,7 +334,7 @@ p { color:var(--text-soft); line-height:1.55; }
 /* Juego */
 .game-screen { align-items:stretch; justify-content:center; background:#080b09; }
 .game-wrap { position:relative; width:100%; height:calc(100vh - 64px); overflow:hidden; }
-#gameCanvas { display:block; width:100%; height:100%; image-rendering:pixelated; cursor:crosshair; }
+#gameCanvas { display:block; width:100%; height:100%; image-rendering:pixelated; cursor:none; }
 
 .hud {
   position:absolute;
@@ -776,4 +788,2098 @@ p { color:var(--text-soft); line-height:1.55; }
 
 @media (max-width:520px) {
   .top-progress-stats .progress-pill:nth-child(3) { display:none; }
+}
+
+
+/* Apuntado renovado: la barra HTML antigua se sustituye por una barra dibujada sobre el jugador. */
+#chargeBar {
+  display: none !important;
+}
+
+
+/* Filtro regional de Pokédex */
+.region-filter-block {
+  margin-top: 18px;
+  padding: 13px;
+  background: rgba(5,24,52,.48);
+  border: 1px solid rgba(146,198,246,.25);
+  border-radius: 12px;
+}
+
+.region-filter-title {
+  display: block;
+  margin-bottom: 8px;
+  color: #9db9d8;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.region-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.region-tab {
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.region-tab.active {
+  color: #172033;
+  background: linear-gradient(180deg,#ffd968,#efa72a);
+  border-color: #fff0a4;
+}
+
+.region-tab.locked {
+  opacity: .42;
+}
+
+
+/* Modales de partida */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1600;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2,9,20,.72);
+  backdrop-filter: blur(5px);
+}
+
+.game-modal {
+  width: min(500px,94vw);
+  padding: 28px;
+  text-align: center;
+  background: linear-gradient(180deg,#173d74,#0b2851);
+  border: 2px solid #acd6ff;
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 4px rgba(2,13,31,.9),
+    0 30px 90px rgba(0,0,0,.55);
+}
+
+.game-modal h2 {
+  margin: 7px 0 8px;
+  color: #ffd55b;
+  font-size: 30px;
+}
+
+.modal-kicker {
+  color: #8fd3ff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.solid-danger {
+  color: #fff !important;
+  background: linear-gradient(180deg,#e24f4f,#a92d34) !important;
+  border-color: #ffaaa6 !important;
+  font-weight: 800;
+}
+
+.danger-text { color:#ff8d88; }
+
+.run-region-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.run-region-card {
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.run-region-card strong {
+  color: #ffd55b;
+  font-size: 18px;
+}
+
+.run-region-card span {
+  color: #abc5df;
+  font-size: 12px;
+}
+
+@media (max-width:560px) {
+  .run-region-grid {
+    grid-template-columns:1fr;
+  }
+
+  .modal-actions {
+    flex-direction:column;
+  }
+}
+
+
+/* Tienda organizada por categorías */
+.shop-categories {
+  display:grid;
+  gap:22px;
+}
+
+.shop-category {
+  padding:16px;
+  border-radius:14px;
+  background:rgba(5,24,52,.42);
+  border:1px solid rgba(146,198,246,.22);
+}
+
+.shop-category-head {
+  margin-bottom:14px;
+}
+
+.shop-category-head h3 {
+  margin:0 0 4px;
+  color:#ffd55b;
+  font-size:20px;
+}
+
+.shop-category-head p {
+  margin:0;
+  font-size:12px;
+  color:#9fb9d8;
+}
+
+.shop-category .shop-grid {
+  margin-top:0;
+}
+
+
+/* Formas de Pokémon dentro de una única entrada de Pokédex */
+.dex-form-label {
+  margin-top:8px;
+  color:#8faecc;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.dex-form-variants {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:5px;
+  margin-top:6px;
+}
+
+.dex-form-button {
+  min-height:27px;
+  padding:4px 7px;
+  font-size:9px;
+  border-radius:7px;
+}
+
+.dex-form-button.active {
+  color:#172033;
+  background:#ffd55b;
+  border-color:#fff0a4;
+}
+
+.dex-form-button:disabled {
+  opacity:.42;
+}
+
+
+/* =========================================================
+   PIXEL UI
+   ========================================================= */
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
+}
+
+h1, h2, h3,
+.brand strong,
+.menu-action strong,
+.progress-label,
+.login-badge,
+.menu-eyebrow,
+.account-kicker,
+.modal-kicker,
+.region-filter-title,
+.shop-category-head h3 {
+  font-family: var(--font-pixel);
+  letter-spacing: .03em;
+}
+
+.pixel-icon {
+  display:inline-block;
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
+  background-image:var(--pixel-icon-sheet);
+  background-repeat:no-repeat;
+  background-size:128px 48px;
+  image-rendering:pixelated;
+  vertical-align:-3px;
+}
+
+.icon-coin    { background-position:   0    0; }
+.icon-pokedex { background-position: -16px  0; }
+.icon-shiny   { background-position: -32px  0; }
+.icon-clock   { background-position: -48px  0; }
+.icon-cloud   { background-position: -64px  0; }
+.icon-play    { background-position: -80px  0; }
+.icon-shop    { background-position: -96px  0; }
+.icon-ball    { background-position:-112px  0; }
+
+.icon-bait    { background-position:   0   -16px; }
+.icon-rock    { background-position: -16px -16px; }
+.icon-capture { background-position: -32px -16px; }
+.icon-habitat { background-position: -48px -16px; }
+.icon-tool    { background-position: -64px -16px; }
+.icon-settings{ background-position: -80px -16px; }
+.icon-profile { background-position: -96px -16px; }
+.icon-back    { background-position:-112px -16px; }
+.icon-speaker { background-position:   0   -32px; }
+.icon-speaker-off { background-position:-16px -32px; }
+
+/* Bordes más secos y "de videojuego", evitando aspecto de UI web genérica */
+button,
+.panel,
+.progress-pill,
+.top-pill,
+.account-pill,
+.top-icon-btn,
+.hud-box,
+.dex-card,
+.shop-card,
+.profile-stats,
+.game-modal,
+.account-panel,
+.region-filter-block,
+.shop-category {
+  image-rendering:pixelated;
+}
+
+button {
+  border-radius:4px;
+  box-shadow:
+    inset 0 -3px 0 rgba(0,0,0,.20),
+    0 3px 0 rgba(0,0,0,.28);
+}
+
+button:hover {
+  transform:translateY(-1px);
+}
+
+button:active {
+  transform:translateY(1px);
+  box-shadow:inset 0 2px 0 rgba(0,0,0,.24);
+}
+
+.panel,
+.game-modal,
+.account-panel {
+  border-radius:6px;
+  box-shadow:
+    0 0 0 3px rgba(5,14,30,.9),
+    6px 6px 0 rgba(0,0,0,.28);
+}
+
+h1 {
+  font-family:var(--font-pixel);
+  line-height:1.35;
+  font-size:34px;
+  text-shadow:
+    3px 3px 0 #7d5310,
+    5px 5px 0 rgba(0,0,0,.35);
+}
+
+h2 {
+  font-size:18px;
+  line-height:1.5;
+}
+
+h3 {
+  font-size:13px;
+  line-height:1.5;
+}
+
+p,
+button,
+input,
+select {
+  font-size:18px;
+}
+
+/* Barra superior */
+.topbar {
+  min-height:68px;
+  background:#08182f;
+  border-bottom:3px solid #67a8e8;
+  box-shadow:0 4px 0 rgba(0,0,0,.35);
+}
+
+.brand strong {
+  color:#fff;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.sub {
+  font-family:var(--font-ui);
+  font-size:14px;
+}
+
+.progress-pill {
+  min-height:36px;
+  border-radius:5px;
+  padding:6px 9px;
+  background:#123b72;
+  border:2px solid #78b4ef;
+  box-shadow:
+    inset 0 -2px 0 rgba(0,0,0,.22),
+    0 2px 0 rgba(0,0,0,.28);
+}
+
+.progress-pill strong {
+  font-family:var(--font-ui);
+  font-size:17px;
+}
+
+.progress-label {
+  color:#ffd55b;
+  font-size:7px;
+  line-height:1.5;
+}
+
+.top-pill,
+.account-pill,
+.top-icon-btn {
+  border-radius:5px;
+  background:#123b72;
+}
+
+.save-status,
+.music-now,
+.account-top-name {
+  font-family:var(--font-ui);
+  font-size:16px;
+}
+
+/* Menú principal */
+.hero-panel {
+  padding:34px;
+}
+
+.login-badge,
+.menu-eyebrow,
+.account-kicker {
+  font-size:7px;
+  line-height:1.8;
+}
+
+.menu-action {
+  min-height:82px;
+  border-radius:5px;
+  background:#173f79;
+  border:2px solid #6ea7ff;
+}
+
+.menu-action.primary {
+  background:#f5bc3b;
+  border-color:#ffe18b;
+}
+
+.menu-action-icon {
+  width:40px;
+  height:40px;
+  border-radius:3px;
+  border:2px solid rgba(255,255,255,.2);
+}
+
+.menu-action-icon .pixel-icon {
+  transform:scale(1.35);
+  transform-origin:center;
+}
+
+.menu-action strong {
+  font-size:9px;
+  line-height:1.6;
+}
+
+.menu-action small {
+  font-family:var(--font-ui);
+  font-size:16px;
+  line-height:1.1;
+}
+
+/* HUD de partida */
+.hud {
+  gap:6px;
+}
+
+.hud-box {
+  min-width:96px;
+  border-radius:4px;
+  padding:7px 9px;
+  background:rgba(9,35,71,.94);
+  border:2px solid #6ba7e2;
+  box-shadow:
+    inset 0 -2px 0 rgba(0,0,0,.18),
+    0 2px 0 rgba(0,0,0,.32);
+}
+
+.hud-box span {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#9fc3e7;
+  font-family:var(--font-pixel);
+  font-size:6px;
+  line-height:1.45;
+}
+
+.hud-box span .pixel-icon {
+  transform:scale(.85);
+  transform-origin:left center;
+  margin-right:-1px;
+}
+
+.hud-box strong {
+  display:block;
+  margin-top:4px;
+  font-family:var(--font-ui);
+  color:#fff;
+  font-size:20px;
+}
+
+.help-box,
+.toast {
+  border-radius:4px;
+  font-family:var(--font-ui);
+  font-size:16px;
+}
+
+/* Pokédex / tienda / perfil */
+.dex-card,
+.shop-card,
+.profile-stats,
+.region-filter-block,
+.shop-category {
+  border-radius:5px;
+  border-width:2px;
+}
+
+.dex-card .number,
+.dex-card .count,
+.shop-card p,
+.shop-card .level,
+.dex-result-count,
+.profile-stats .label,
+.region-tab,
+.run-region-card span {
+  font-family:var(--font-ui);
+  font-size:15px;
+}
+
+.dex-card .name {
+  font-family:var(--font-pixel);
+  font-size:8px;
+  line-height:1.6;
+}
+
+.dex-toolbar input,
+.dex-toolbar select {
+  border-radius:4px;
+  font-size:16px;
+}
+
+.region-tab {
+  border-radius:4px;
+}
+
+.shop-summary {
+  font-family:var(--font-pixel);
+  font-size:10px;
+}
+
+.shop-card h3,
+.profile-stats h3,
+.trainer-library-intro h3 {
+  color:#ffd55b;
+}
+
+/* Botones con iconos añadidos */
+.backBtn,
+#accountGameProfileBtn,
+#accountSettingsBtn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+/* Account / modal */
+.account-avatar {
+  border-radius:4px;
+}
+
+.account-close-btn {
+  border-radius:4px;
+}
+
+.game-modal h2,
+.account-panel-head h2 {
+  font-family:var(--font-pixel);
+}
+
+/* Mantener sprites y canvas nítidos */
+img,
+canvas,
+.pixel-icon {
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+}
+
+/* Mejor lectura en pantallas pequeñas */
+@media (max-width:720px) {
+  h1 { font-size:26px; }
+  .menu-action strong { font-size:8px; }
+  .menu-action small { font-size:15px; }
+  .hud-box { min-width:78px; }
+  .hud-box strong { font-size:17px; }
+}
+
+
+/* =========================================================
+   REFINAMIENTO DE ESCALAS Y CABECERA
+   ========================================================= */
+
+.visually-hidden {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
+
+/* Menú principal: iconos y títulos ganan protagonismo */
+.safari-menu-buttons .menu-action {
+  min-height:96px;
+  gap:15px;
+  padding:14px 16px;
+}
+
+.safari-menu-buttons .menu-action-icon {
+  width:48px;
+  height:48px;
+  flex:0 0 48px;
+}
+
+.safari-menu-buttons .menu-action-icon .pixel-icon {
+  transform:scale(2);
+  transform-origin:center;
+}
+
+.safari-menu-buttons .menu-action strong {
+  font-size:11px;
+  line-height:1.55;
+}
+
+.safari-menu-buttons .menu-action small {
+  margin-top:4px;
+  font-size:14px;
+  line-height:1.05;
+  font-weight:500;
+}
+
+/* Barra superior: etiqueta más visible, cifra algo más pequeña y legible */
+.progress-pill {
+  gap:7px;
+  padding:7px 10px;
+}
+
+.progress-label {
+  display:inline !important;
+  font-size:8px;
+  line-height:1.35;
+  color:#ffd55b;
+}
+
+.progress-pill strong,
+#topCoins,
+#topDex,
+#topShinyDex,
+#topPlaytime {
+  font-family:var(--font-numbers);
+  font-size:11px;
+  line-height:1;
+  letter-spacing:0;
+  font-variant-numeric:tabular-nums;
+}
+
+.progress-pill .pixel-icon {
+  transform:scale(1.1);
+}
+
+/* Botones compactos de la esquina superior */
+.top-icon-btn,
+.cloud-status-icon {
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border-radius:5px;
+  background:#123b72;
+  border:2px solid rgba(185,221,255,.78);
+  box-shadow:
+    inset 0 -2px 0 rgba(0,0,0,.22),
+    0 2px 0 rgba(0,0,0,.3);
+}
+
+.cloud-status-icon {
+  cursor:default;
+}
+
+.top-icon-btn .pixel-icon,
+.cloud-status-icon .pixel-icon {
+  transform:scale(1.35);
+}
+
+.audio-toggle.off {
+  border-color:#bd6b72;
+  background:#5c2b3b;
+}
+
+/* La pista musical queda como información secundaria */
+.music-now {
+  font-size:14px;
+  max-width:150px;
+}
+
+/* Números del HUD también ganan legibilidad */
+.hud-box strong,
+.profile-stats strong,
+.shop-summary strong,
+.summary-stats strong {
+  font-family:var(--font-numbers);
+  letter-spacing:0;
+}
+
+/* Responsive: evitar que la cabecera vuelva a ocultar las etiquetas demasiado pronto */
+@media (max-width:1500px) {
+  .progress-label {
+    display:inline !important;
+  }
+}
+
+@media (max-width:1260px) {
+  .progress-label {
+    display:none !important;
+  }
+}
+
+@media (max-width:720px) {
+  .safari-menu-buttons .menu-action {
+    min-height:82px;
+  }
+
+  .safari-menu-buttons .menu-action-icon {
+    width:42px;
+    height:42px;
+    flex-basis:42px;
+  }
+
+  .safari-menu-buttons .menu-action-icon .pixel-icon {
+    transform:scale(1.65);
+  }
+
+  .safari-menu-buttons .menu-action strong {
+    font-size:9px;
+  }
+
+  .safari-menu-buttons .menu-action small {
+    font-size:13px;
+  }
+}
+
+
+/* =========================================================
+   NÚMEROS GLOBALES + CABECERA MÁS LEGIBLE
+   ========================================================= */
+
+/*
+  Silkscreen pasa a ser la fuente numérica global.
+  Se aplica a contadores, estadísticas, cantidades, tiempos,
+  niveles, precios, resultados, filtros y otros valores numéricos.
+*/
+strong,
+.progress-pill strong,
+.hud-box strong,
+.profile-stats strong,
+.summary-stats strong,
+.shop-summary strong,
+.shop-card .level,
+.dex-card .number,
+.dex-card .count,
+.dex-result-count,
+.run-region-card span,
+.account-info-grid strong,
+.audio-settings-grid label strong,
+.selected-badge,
+#topCoins,
+#topDex,
+#topShinyDex,
+#topPlaytime,
+#shopCoins,
+#profileDex,
+#profileCaptures,
+#profileShinies,
+#profileRuns,
+#profilePlaytime,
+#profileCoins,
+#ballsHud,
+#stepsHud,
+#timeHud,
+#baitHud,
+#rocksHud,
+#capturesHud {
+  font-family:var(--font-numbers);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:0;
+}
+
+/* Excepciones: títulos y nombres siguen usando la fuente pixel principal */
+.menu-action strong,
+.brand strong,
+.shop-card h3,
+.dex-card .name,
+.section-head h2,
+.game-modal h2,
+.account-panel-head h2,
+.run-region-card strong {
+  font-family:var(--font-pixel);
+}
+
+/* Cabecera más alta y respirada */
+.topbar {
+  min-height:82px;
+  padding:10px 18px;
+  gap:18px;
+}
+
+main {
+  min-height:calc(100vh - 82px);
+}
+
+.screen {
+  min-height:calc(100vh - 82px);
+}
+
+.game-wrap {
+  height:calc(100vh - 82px);
+}
+
+/* Marca más legible */
+.brand strong {
+  font-size:14px;
+  line-height:1.45;
+}
+
+.sub {
+  font-size:15px;
+  line-height:1.25;
+}
+
+/* Progreso central más grande */
+.top-progress-stats {
+  gap:9px;
+}
+
+.progress-pill {
+  min-height:46px;
+  padding:8px 12px;
+  gap:9px;
+  border-width:2px;
+}
+
+.progress-pill .pixel-icon {
+  transform:scale(1.4);
+  transform-origin:center;
+}
+
+.progress-label {
+  font-size:9px;
+  line-height:1.3;
+}
+
+.progress-pill strong,
+#topCoins,
+#topDex,
+#topShinyDex,
+#topPlaytime {
+  font-size:12px;
+  line-height:1.1;
+}
+
+/* Controles derechos más grandes */
+.top-icon-btn,
+.cloud-status-icon {
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+}
+
+.top-icon-btn .pixel-icon,
+.cloud-status-icon .pixel-icon {
+  transform:scale(1.55);
+}
+
+.account-pill {
+  min-height:46px;
+  padding:6px 12px 6px 7px;
+  gap:9px;
+}
+
+.account-avatar {
+  width:34px;
+  height:34px;
+}
+
+.account-top-name {
+  font-size:16px;
+}
+
+.music-now {
+  font-size:15px;
+  max-width:170px;
+}
+
+/* Números generales un poco más fáciles de leer */
+.hud-box strong {
+  font-size:18px;
+}
+
+.dex-card .number,
+.dex-card .count,
+.shop-card .level,
+.dex-result-count,
+.run-region-card span {
+  font-size:13px;
+}
+
+.profile-stats strong {
+  font-size:16px;
+}
+
+.shop-summary strong {
+  font-size:14px;
+}
+
+/* Ajuste responsive por la nueva altura */
+@media (max-width:1180px) {
+  .topbar {
+    min-height:74px;
+  }
+
+  main {
+    min-height:calc(100vh - 74px);
+  }
+
+  .screen {
+    min-height:calc(100vh - 74px);
+  }
+
+  .game-wrap {
+    height:calc(100vh - 74px);
+  }
+}
+
+@media (max-width:860px) {
+  .progress-pill {
+    min-height:40px;
+    padding:6px 9px;
+  }
+
+  .progress-pill .pixel-icon {
+    transform:scale(1.2);
+  }
+
+  .progress-pill strong {
+    font-size:10px;
+  }
+
+  .top-icon-btn,
+  .cloud-status-icon {
+    width:40px;
+    height:40px;
+    flex-basis:40px;
+  }
+}
+
+
+/* =========================================================
+   HUD DE RUN REORGANIZADO
+   ========================================================= */
+.hud {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.hud-top-center,
+.hud-bottom-center {
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.hud-top-center {
+  top:14px;
+  flex-wrap:wrap;
+}
+
+.hud-bottom-center {
+  bottom:18px;
+  gap:14px;
+}
+
+.hud-hidden-runtime {
+  display:none !important;
+}
+
+.hud-box {
+  min-width:128px;
+  padding:9px 13px 10px;
+  border-radius:12px;
+  background:rgba(7,28,56,.92);
+  border:2px solid rgba(165,210,255,.56);
+  box-shadow:0 4px 0 rgba(0,0,0,.25);
+}
+
+.hud-box span {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  color:#a8c4df;
+  font-size:11px;
+  line-height:1.25;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.hud-box strong {
+  display:block;
+  margin-top:4px;
+  font-size:22px;
+  line-height:1.05;
+  text-align:center;
+}
+
+.top-stat-box {
+  min-width:150px;
+}
+
+.top-stat-box strong {
+  font-size:21px;
+}
+
+.inventory-box {
+  min-width:150px;
+  padding:10px 16px 11px;
+}
+
+.inventory-box span {
+  font-size:12px;
+}
+
+.inventory-box strong {
+  font-size:24px;
+}
+
+.help-box {
+  position:absolute;
+  top:14px;
+  left:14px;
+  transform:none;
+  width:min(330px,30vw);
+  padding:12px 14px;
+  background:rgba(6,24,48,.92);
+  border:2px solid rgba(176,216,255,.36);
+  border-radius:12px;
+  color:#d6e7f8;
+  white-space:normal;
+  pointer-events:none;
+  box-shadow:0 4px 0 rgba(0,0,0,.25);
+}
+
+.help-title {
+  margin-bottom:8px;
+  color:#ffd55b;
+  font-family:var(--font-pixel);
+  font-size:10px;
+  letter-spacing:.08em;
+}
+
+.help-list {
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+.help-list li {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:6px 0;
+  border-top:1px solid rgba(176,216,255,.16);
+  font-size:12px;
+  line-height:1.2;
+}
+
+.help-list li:first-child {
+  border-top:0;
+  padding-top:2px;
+}
+
+.help-list li span {
+  color:#bcd3eb;
+}
+
+.help-list li strong {
+  color:#ffffff;
+  font-family:var(--font-numbers);
+  font-size:12px;
+  white-space:nowrap;
+}
+
+/* La barra de carga sigue oculta en esta versión */
+#chargeBar {
+  display:none !important;
+}
+
+/* Ajustes responsive */
+@media (max-width: 1280px) {
+  .help-box {
+    width:min(300px, 34vw);
+  }
+
+  .hud-box {
+    min-width:118px;
+  }
+
+  .inventory-box,
+  .top-stat-box {
+    min-width:138px;
+  }
+}
+
+@media (max-width: 980px) {
+  .help-box {
+    width:min(270px, 38vw);
+    padding:10px 12px;
+  }
+
+  .help-list li {
+    font-size:11px;
+  }
+
+  .hud-top-center {
+    top:12px;
+    gap:8px;
+  }
+
+  .hud-bottom-center {
+    bottom:14px;
+    gap:10px;
+  }
+
+  .hud-box {
+    min-width:108px;
+    padding:8px 10px 9px;
+  }
+
+  .hud-box span {
+    font-size:10px;
+    gap:6px;
+  }
+
+  .hud-box strong {
+    font-size:19px;
+  }
+
+  .inventory-box strong,
+  .top-stat-box strong {
+    font-size:20px;
+  }
+}
+
+
+/* =========================================================
+   PIXELIFY SANS GLOBAL + AYUDA COMPACTA
+   ========================================================= */
+
+/*
+  Se unifica toda la interfaz con Pixelify Sans.
+  La diferenciación visual se hace con peso/tamaño, no mezclando familias.
+*/
+:root {
+  --font-pixel:"m6x11", monospace;
+  --font-ui:"m6x11", monospace;
+  --font-numbers:"m6x11", monospace;
+}
+
+body,
+button,
+input,
+select,
+textarea,
+strong,
+small,
+span,
+p,
+h1,
+h2,
+h3 {
+  font-family:var(--font-ui);
+}
+
+h1,
+h2,
+h3,
+.brand strong,
+.menu-action strong,
+.progress-label,
+.login-badge,
+.menu-eyebrow,
+.account-kicker,
+.modal-kicker,
+.region-filter-title,
+.shop-category-head h3,
+.help-title {
+  font-family:var(--font-pixel);
+  font-weight:700;
+}
+
+.progress-pill strong,
+.hud-box strong,
+.profile-stats strong,
+.summary-stats strong,
+.shop-summary strong,
+.shop-card .level,
+.dex-card .number,
+.dex-card .count,
+.dex-result-count,
+.run-region-card span,
+.account-info-grid strong,
+.audio-settings-grid label strong {
+  font-family:var(--font-numbers);
+  font-weight:600;
+}
+
+/*
+  La caja de ayuda antes heredaba bottom:10px de la regla antigua.
+  Al tener top + bottom quedaba estirada hasta casi el suelo.
+  Se resetea bottom para que mida únicamente lo que ocupa su contenido.
+*/
+.help-box {
+  top:14px;
+  left:14px;
+  bottom:auto !important;
+  right:auto;
+  height:auto !important;
+  min-height:0;
+  width:290px;
+  max-width:calc(100vw - 28px);
+  padding:11px 13px 10px;
+}
+
+.help-title {
+  margin-bottom:6px;
+  font-size:13px;
+  line-height:1.1;
+}
+
+.help-list li {
+  gap:10px;
+  padding:5px 0;
+  font-size:12px;
+  line-height:1.15;
+}
+
+.help-list li strong {
+  font-size:12px;
+  font-weight:700;
+}
+
+/* Mejora general de legibilidad con Pixelify Sans */
+.hud-box span {
+  font-weight:600;
+}
+
+.hud-box strong {
+  font-weight:700;
+}
+
+.progress-label {
+  font-weight:700;
+}
+
+.progress-pill strong {
+  font-weight:700;
+}
+
+.menu-action strong {
+  font-weight:700;
+}
+
+.menu-action small {
+  font-weight:500;
+}
+
+/* En pantallas más estrechas mantenemos la ayuda compacta */
+@media (max-width:1280px) {
+  .help-box {
+    width:275px;
+  }
+}
+
+@media (max-width:980px) {
+  .help-box {
+    width:255px;
+    padding:9px 11px;
+  }
+
+  .help-title {
+    font-size:12px;
+  }
+
+  .help-list li,
+  .help-list li strong {
+    font-size:11px;
+  }
+}
+
+
+/* =========================================================
+   CORRECCIÓN FINAL DE TIPOGRAFÍA Y TAMAÑOS
+   ========================================================= */
+
+/*
+  Forzamos Pixelify Sans también en cifras.
+  Esto evita que reglas antiguas o pesos distintos hagan que algunos
+  contadores parezcan usar otra familia.
+*/
+html,
+body,
+button,
+input,
+select,
+textarea,
+strong,
+small,
+span,
+p,
+h1,
+h2,
+h3,
+label,
+div {
+  font-family:"m6x11", monospace !important;
+}
+
+/*
+  En concreto, todos los valores numéricos importantes usan la misma
+  familia Pixelify Sans, sin variantes tipográficas adicionales.
+*/
+#topCoins,
+#topDex,
+#topShinyDex,
+#topPlaytime,
+#ballsHud,
+#stepsHud,
+#timeHud,
+#baitHud,
+#rocksHud,
+#capturesHud,
+#shopCoins,
+#profileDex,
+#profileCaptures,
+#profileShinies,
+#profileRuns,
+#profilePlaytime,
+#profileCoins,
+.progress-pill strong,
+.hud-box strong,
+.profile-stats strong,
+.summary-stats strong,
+.shop-summary strong,
+.shop-card .level,
+.dex-card .number,
+.dex-card .count,
+.dex-result-count,
+.run-region-card span,
+.account-info-grid strong,
+.audio-settings-grid label strong {
+  font-family:"m6x11", monospace !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+  font-weight:700;
+  letter-spacing:0;
+}
+
+/* =========================================================
+   CABECERA: ETIQUETAS MÁS GRANDES
+   ========================================================= */
+
+.progress-pill {
+  min-height:48px;
+  padding:8px 13px;
+  gap:9px;
+}
+
+.progress-label {
+  display:inline !important;
+  font-size:11px !important;
+  line-height:1.15;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+
+.progress-pill strong,
+#topCoins,
+#topDex,
+#topShinyDex,
+#topPlaytime {
+  font-size:14px !important;
+  line-height:1;
+}
+
+.progress-pill .pixel-icon {
+  transform:scale(1.45);
+  transform-origin:center;
+}
+
+/* =========================================================
+   HUD DE RUN: TÍTULOS Y CIFRAS MÁS LEGIBLES
+   ========================================================= */
+
+.hud-box {
+  padding:10px 14px 11px;
+}
+
+.hud-box span {
+  font-size:13px !important;
+  line-height:1.15;
+  font-weight:700;
+  letter-spacing:.045em;
+}
+
+.hud-box span .pixel-icon {
+  transform:scale(1.05);
+  transform-origin:center;
+}
+
+.hud-box strong {
+  margin-top:6px;
+  font-size:24px !important;
+  line-height:1;
+}
+
+.top-stat-box {
+  min-width:160px;
+}
+
+.top-stat-box span {
+  font-size:13px !important;
+}
+
+.top-stat-box strong {
+  font-size:23px !important;
+}
+
+.inventory-box {
+  min-width:160px;
+  padding:11px 16px 12px;
+}
+
+.inventory-box span {
+  font-size:14px !important;
+}
+
+.inventory-box strong {
+  font-size:27px !important;
+}
+
+/* Ayuda: mantenerla compacta, pero con título legible */
+.help-title {
+  font-size:14px !important;
+  font-weight:700;
+}
+
+.help-list li {
+  font-size:12px;
+}
+
+.help-list li strong {
+  font-family:"m6x11", monospace !important;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* Evitar que las etiquetas desaparezcan demasiado pronto */
+@media (max-width:1500px) {
+  .progress-label {
+    display:inline !important;
+  }
+}
+
+@media (max-width:1260px) {
+  .progress-label {
+    font-size:10px !important;
+  }
+
+  .progress-pill strong {
+    font-size:13px !important;
+  }
+
+  .hud-box span {
+    font-size:12px !important;
+  }
+
+  .inventory-box span,
+  .top-stat-box span {
+    font-size:12px !important;
+  }
+}
+
+@media (max-width:980px) {
+  .progress-label {
+    display:none !important;
+  }
+
+  .hud-box strong {
+    font-size:21px !important;
+  }
+
+  .inventory-box strong,
+  .top-stat-box strong {
+    font-size:22px !important;
+  }
+}
+
+
+/* =========================================================
+   JERARQUÍA DE TÍTULOS EN CAJAS Y BOTONES
+   ========================================================= */
+
+/*
+  Regla general:
+  - el título de una caja/botón debe ser más grande y más fuerte
+  - la descripción/subtexto debe ser claramente secundaria
+*/
+
+/* ---------- Barra superior ---------- */
+.progress-pill {
+  min-height:50px;
+}
+
+.progress-label {
+  font-size:14px !important;
+  line-height:1;
+  font-weight:700;
+}
+
+.progress-pill strong,
+#topCoins,
+#topDex,
+#topShinyDex,
+#topPlaytime {
+  font-size:14px !important;
+  line-height:1;
+  font-weight:700;
+}
+
+/* ---------- Menú principal ---------- */
+.safari-menu-buttons .menu-action {
+  min-height:100px;
+  gap:16px;
+  padding:15px 17px;
+}
+
+.safari-menu-buttons .menu-action strong {
+  display:block;
+  font-size:18px !important;
+  line-height:1.05;
+  font-weight:700;
+}
+
+.safari-menu-buttons .menu-action small {
+  display:block;
+  margin-top:6px;
+  font-size:14px !important;
+  line-height:1.15;
+  font-weight:500;
+  opacity:.95;
+}
+
+/* ---------- Cajas superiores de la run ---------- */
+.top-stat-box span {
+  font-size:15px !important;
+  font-weight:700;
+}
+
+.top-stat-box strong {
+  font-size:24px !important;
+}
+
+/* ---------- Inventario inferior ---------- */
+.inventory-box span {
+  font-size:15px !important;
+  font-weight:700;
+}
+
+.inventory-box strong {
+  font-size:27px !important;
+}
+
+/* ---------- Tienda ---------- */
+.shop-card h3 {
+  font-size:18px !important;
+  line-height:1.1;
+  font-weight:700;
+}
+
+.shop-card p {
+  font-size:14px !important;
+  line-height:1.35;
+}
+
+/* ---------- Selector de región ---------- */
+.run-region-card strong {
+  font-size:20px !important;
+  line-height:1.05;
+  font-weight:700;
+}
+
+.run-region-card span {
+  font-size:14px !important;
+}
+
+/* ---------- Pokédex ---------- */
+.dex-card .name {
+  font-size:15px !important;
+  line-height:1.05;
+  font-weight:700;
+}
+
+.dex-card .number,
+.dex-card .count,
+.dex-form-label {
+  font-size:12px !important;
+}
+
+/* ---------- Perfil ---------- */
+.profile-stats h3,
+.trainer-library-intro h3 {
+  font-size:18px !important;
+}
+
+.profile-stats .label {
+  font-size:12px !important;
+}
+
+/* ---------- Modales y paneles ---------- */
+.game-modal h2,
+.account-panel-head h2,
+.section-head h2 {
+  font-size:24px !important;
+  line-height:1.15;
+}
+
+.game-modal p,
+.section-head p,
+.account-identity-text span {
+  font-size:14px !important;
+}
+
+/* ---------- Ayuda ---------- */
+.help-title {
+  font-size:15px !important;
+}
+
+.help-list li span {
+  font-size:12px !important;
+}
+
+.help-list li strong {
+  font-size:12px !important;
+}
+
+/* Responsive */
+@media (max-width:1260px) {
+  .progress-label,
+  .progress-pill strong {
+    font-size:13px !important;
+  }
+
+  .safari-menu-buttons .menu-action strong {
+    font-size:16px !important;
+  }
+
+  .safari-menu-buttons .menu-action small {
+    font-size:13px !important;
+  }
+}
+
+@media (max-width:980px) {
+  .progress-label {
+    display:none !important;
+  }
+
+  .safari-menu-buttons .menu-action strong {
+    font-size:15px !important;
+  }
+
+  .safari-menu-buttons .menu-action small {
+    font-size:12px !important;
+  }
+}
+
+
+/* =========================================================
+   FUENTE GLOBAL m6x11
+   ========================================================= */
+
+:root {
+  --font-pixel: "m6x11", monospace;
+  --font-ui: "m6x11", monospace;
+  --font-numbers: "m6x11", monospace;
+}
+
+/*
+  m6x11 pasa a ser la única familia de fuente del juego.
+  No usamos negrita sintética: la jerarquía se consigue con tamaño,
+  color y espaciado.
+*/
+html,
+body,
+button,
+input,
+select,
+textarea,
+option,
+label,
+div,
+span,
+p,
+small,
+strong,
+b,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "m6x11", monospace !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-variant-numeric: normal !important;
+  font-feature-settings: normal !important;
+}
+
+/* La fuente bitmap se lee mejor con tamaños enteros y algo de aire. */
+body {
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* Marca y títulos generales */
+.brand strong {
+  font-size: 18px !important;
+  letter-spacing: .04em;
+}
+
+.sub {
+  font-size: 14px !important;
+}
+
+h1 {
+  font-size: 40px !important;
+  line-height: 1.05;
+  letter-spacing: .025em;
+}
+
+h2 {
+  font-size: 28px !important;
+  line-height: 1.05;
+}
+
+h3 {
+  font-size: 20px !important;
+}
+
+/* Barra superior */
+.progress-label {
+  font-size: 16px !important;
+  line-height: 1;
+  letter-spacing: .035em;
+}
+
+.progress-pill strong,
+#topCoins,
+#topDex,
+#topShinyDex,
+#topPlaytime {
+  font-size: 16px !important;
+  line-height: 1;
+  letter-spacing: .02em;
+}
+
+/* Menú principal: título siempre mayor que la descripción */
+.safari-menu-buttons .menu-action strong {
+  font-size: 22px !important;
+  line-height: 1;
+  letter-spacing: .02em;
+}
+
+.safari-menu-buttons .menu-action small {
+  font-size: 16px !important;
+  line-height: 1.05;
+  margin-top: 6px;
+}
+
+/* HUD de run */
+.hud-box span,
+.top-stat-box span {
+  font-size: 16px !important;
+  line-height: 1;
+  letter-spacing: .035em;
+}
+
+.hud-box strong,
+.top-stat-box strong {
+  font-size: 26px !important;
+  line-height: 1;
+}
+
+.inventory-box span {
+  font-size: 17px !important;
+}
+
+.inventory-box strong {
+  font-size: 30px !important;
+}
+
+/* Caja de ayuda */
+.help-title {
+  font-size: 18px !important;
+  line-height: 1;
+}
+
+.help-list li,
+.help-list li span,
+.help-list li strong {
+  font-size: 14px !important;
+  line-height: 1.05;
+}
+
+/* Pokédex */
+.section-head h2,
+.game-modal h2,
+.account-panel-head h2 {
+  font-size: 30px !important;
+}
+
+.section-head p,
+.game-modal p {
+  font-size: 16px !important;
+}
+
+.region-filter-title {
+  font-size: 16px !important;
+}
+
+.region-tab {
+  font-size: 16px !important;
+}
+
+.dex-toolbar input,
+.dex-toolbar select,
+.dex-result-count {
+  font-size: 16px !important;
+}
+
+.dex-card .number {
+  font-size: 14px !important;
+}
+
+.dex-card .name {
+  font-size: 18px !important;
+}
+
+.dex-card .count {
+  font-size: 15px !important;
+}
+
+.dex-form-label,
+.dex-form-button,
+.dex-variants button {
+  font-size: 13px !important;
+}
+
+/* Tienda */
+.shop-summary {
+  font-size: 20px !important;
+}
+
+.shop-category-head h3,
+.shop-card h3 {
+  font-size: 22px !important;
+}
+
+.shop-category-head p,
+.shop-card p {
+  font-size: 16px !important;
+}
+
+.shop-card .level {
+  font-size: 15px !important;
+}
+
+.shop-card button {
+  font-size: 17px !important;
+}
+
+/* Selector de región */
+.run-region-card strong {
+  font-size: 22px !important;
+}
+
+.run-region-card span {
+  font-size: 16px !important;
+}
+
+/* Perfil / ajustes / cuenta */
+.profile-stats h3,
+.trainer-library-intro h3 {
+  font-size: 22px !important;
+}
+
+.profile-stats .label,
+.account-info-grid span,
+.audio-settings-grid label {
+  font-size: 15px !important;
+}
+
+.profile-stats strong,
+.account-info-grid strong,
+.audio-settings-grid label strong {
+  font-size: 18px !important;
+}
+
+/* Resumen de expedición */
+.summary-stats .label {
+  font-size: 15px !important;
+}
+
+.summary-stats strong {
+  font-size: 22px !important;
+}
+
+/* Botones generales */
+.backBtn,
+.modal-actions button,
+.account-actions button {
+  font-size: 17px !important;
+}
+
+/*
+  Evita que Chrome suavice demasiado una fuente diseñada para pixel art.
+  No todos los navegadores respetan estas propiedades, pero no perjudican
+  cuando se ignoran.
+*/
+body {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive */
+@media (max-width: 1260px) {
+  .progress-label,
+  .progress-pill strong {
+    font-size: 15px !important;
+  }
+
+  .safari-menu-buttons .menu-action strong {
+    font-size: 20px !important;
+  }
+
+  .safari-menu-buttons .menu-action small {
+    font-size: 15px !important;
+  }
+
+  .hud-box span,
+  .top-stat-box span {
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .progress-label {
+    display: none !important;
+  }
+
+  h1 {
+    font-size: 34px !important;
+  }
+
+  .hud-box strong,
+  .top-stat-box strong {
+    font-size: 23px !important;
+  }
+
+  .inventory-box strong {
+    font-size: 26px !important;
+  }
+}
+
+
+/* =========================================================
+   m6x11 — VERIFICACIÓN FINAL GLOBAL
+   ========================================================= */
+*,
+*::before,
+*::after {
+  font-family:"m6x11", monospace !important;
+  font-synthesis:none !important;
+  font-style:normal !important;
+  font-variant-numeric:normal !important;
+  font-feature-settings:normal !important;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea,
+option,
+label,
+div,
+span,
+p,
+small,
+strong,
+b,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:"m6x11", monospace !important;
+}
+
+/* m6x11 tiene un único peso real: no fabricar negritas. */
+strong,
+b,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.progress-label,
+.progress-pill strong,
+.hud-box span,
+.hud-box strong,
+.menu-action strong,
+.menu-action small,
+.shop-card h3,
+.shop-card p,
+.shop-card .level,
+.dex-card .number,
+.dex-card .name,
+.dex-card .count,
+.help-title,
+.help-list li,
+.help-list li strong {
+  font-weight:400 !important;
+}
+
+/* Mantener jerarquía por tamaño */
+.progress-label,
+.progress-pill strong {
+  font-size:16px !important;
+}
+
+.top-stat-box span {
+  font-size:16px !important;
+}
+
+.top-stat-box strong {
+  font-size:26px !important;
+}
+
+.inventory-box span {
+  font-size:17px !important;
+}
+
+.inventory-box strong {
+  font-size:30px !important;
+}
+
+.safari-menu-buttons .menu-action strong {
+  font-size:22px !important;
+}
+
+.safari-menu-buttons .menu-action small {
+  font-size:16px !important;
+}
+
+.shop-card h3 {
+  font-size:22px !important;
+}
+
+.shop-card p {
+  font-size:16px !important;
 }

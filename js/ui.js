@@ -2,6 +2,8 @@
   const NS = window.SafariGame = window.SafariGame || {};
   let save = NS.Storage.load();
   let game = null;
+  let settingsReturnScreen = 'menuScreen';
+  let resumeRunAfterSettings = false;
   let toastTimer = 0;
   let dexAnimationId = 0;
   let dexSprites = null;
@@ -9,7 +11,7 @@
   let profileAnimationId = 0;
   let profileRepo = null;
   let profileCards = [];
-  let dexFilterState = { search:'', status:'all', rarity:'all', habitat:'all', type:'all' };
+  let dexFilterState = { region:'kanto', search:'', status:'all', rarity:'all', habitat:'all', type:'all' };
 
   const $ = id => document.getElementById(id);
   const screens = [...document.querySelectorAll('.screen')];
@@ -46,10 +48,54 @@
     profileCards = [];
   }
 
-  function show(id) {
+  function getActiveScreenId() {
+    return screens.find(s => s.classList.contains('active'))?.id || 'menuScreen';
+  }
+
+  function hideOverlay(id) {
+    const el = $(id);
+    if (!el) return;
+    el.classList.add('hidden');
+    el.setAttribute('aria-hidden', 'true');
+  }
+
+  function disposeRunSilently() {
+    if (!game) {
+      if (NS.activeGame && !NS.activeGame.running) NS.activeGame = null;
+      return;
+    }
+
+    try {
+      game.running = false;
+      game.paused = false;
+      game.keys = {};
+      game.unbindInput?.();
+    } catch (_) {}
+
+    if (NS.activeGame === game) NS.activeGame = null;
+
+    hideOverlay('pauseOverlay');
+    hideOverlay('abandonConfirmOverlay');
+    hideOverlay('regionSelectOverlay');
+
+    game = null;
+    resumeRunAfterSettings = false;
+    settingsReturnScreen = 'menuScreen';
+  }
+
+  function show(id, options = {}) {
     if (id !== 'pokedexScreen') stopDexAnimation();
     if (id !== 'profileScreen') stopProfileAnimation();
+
+    const previous = getActiveScreenId();
+    const preserveRun = !!options.preserveRun;
+
+    if (!preserveRun && previous === 'gameScreen' && id !== 'gameScreen' && game?.running) {
+      disposeRunSilently();
+    }
+
     screens.forEach(s => s.classList.toggle('active', s.id === id));
+    return previous;
   }
 
   function shinyTotal() {
@@ -62,6 +108,24 @@
 
   function caughtSpeciesCount() {
     return NS.SPECIES.filter(s => save.dex[s.id]?.count > 0).length;
+  }
+
+  function unlockedSpeciesList() {
+    return NS.unlockedSpecies
+      ? NS.unlockedSpecies(save)
+      : NS.SPECIES;
+  }
+
+  function caughtUnlockedSpeciesCount() {
+    return unlockedSpeciesList().filter(
+      s => save.dex[s.id]?.count > 0
+    ).length;
+  }
+
+  function shinyUnlockedSpeciesCount() {
+    return unlockedSpeciesList().filter(
+      s => (save.dex[s.id]?.shiny || 0) > 0
+    ).length;
   }
 
   function formatPlaytime(totalSeconds) {
@@ -77,21 +141,85 @@
     const topPlaytime = $('topPlaytime');
 
     if (topCoins) topCoins.textContent = save.coins;
-    if (topDex) topDex.textContent = `${caughtSpeciesCount()} / ${NS.SPECIES.length}`;
-    if (topShinyDex) topShinyDex.textContent = `${shinySpeciesCount()} / ${NS.SPECIES.length}`;
+    const unlockedSpecies = unlockedSpeciesList();
+    if (topDex) topDex.textContent = `${caughtUnlockedSpeciesCount()} / ${unlockedSpecies.length}`;
+    if (topShinyDex) topShinyDex.textContent = `${shinyUnlockedSpeciesCount()} / ${unlockedSpecies.length}`;
     if (topPlaytime) topPlaytime.textContent = formatPlaytime(save.totalRunSeconds || 0);
 
-    $('menuIntro').textContent = `Explora, prepara el encuentro y completa la Pokédex. Esta versión incluye ${NS.SPECIES.length} especies de Kanto.`;
+    $('menuIntro').textContent = `Explora, prepara el encuentro y completa la Pokédex. ${NS.SPECIES.length} especies disponibles entre las regiones cargadas.`;
     const habitatLevel=save.upgrades.habitatLicense||0;
-    $('dexIntro').textContent = `${NS.SPECIES.length} especies de Kanto. Licencia de hábitats: nivel ${habitatLevel}/4. Cada especie aparece con más frecuencia en sus zonas naturales.`;
+    $('dexIntro').textContent = `${NS.SPECIES.length} especies cargadas. Licencia de hábitats: nivel ${habitatLevel}/4. Las distintas formas comparten una única entrada de Pokédex.`;
+  }
+
+  function startRunForRegion(regionId) {
+    disposeRunSilently();
+    save.profile = save.profile || {};
+    save.profile.activeRegion = regionId;
+    NS.Storage.save(save);
+
+    $('regionSelectOverlay')?.classList.add('hidden');
+    $('regionSelectOverlay')?.setAttribute('aria-hidden','true');
+
+    show('gameScreen');
+
+    const canvas = $('gameCanvas');
+    resizeCanvas(canvas);
+
+    game = new NS.Game(
+      canvas,
+      save,
+      onRunEnd,
+      onHud,
+      showToast
+    );
+
+    game.start();
+  }
+
+  function openRegionSelector() {
+    const regions = NS.availableRegions
+      ? NS.availableRegions(save)
+      : [{id:'kanto',name:'Kanto'}];
+
+    if (regions.length <= 1) {
+      startRunForRegion(regions[0]?.id || 'kanto');
+      return;
+    }
+
+    const grid = $('runRegionGrid');
+    grid.innerHTML = '';
+
+    for (const region of regions) {
+      const speciesCount = NS.SPECIES.filter(
+        s => NS.regionForSpecies(s) === region.id
+      ).length;
+
+      const caught = NS.SPECIES.filter(
+        s =>
+          NS.regionForSpecies(s) === region.id &&
+          save.dex[s.id]?.count > 0
+      ).length;
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'run-region-card';
+      button.innerHTML = `
+        <strong>${region.name}</strong>
+        <span>${caught} / ${speciesCount} registrados</span>
+      `;
+
+      button.onclick = () =>
+        startRunForRegion(region.id);
+
+      grid.appendChild(button);
+    }
+
+    $('regionSelectOverlay').classList.remove('hidden');
+    $('regionSelectOverlay').setAttribute('aria-hidden','false');
   }
 
   function newRun() {
-    show('gameScreen');
-    const canvas = $('gameCanvas');
-    resizeCanvas(canvas);
-    game = new NS.Game(canvas, save, onRunEnd, onHud, showToast);
-    game.start();
+    openRegionSelector();
   }
 
   function resizeCanvas(canvas) {
@@ -128,6 +256,8 @@
   }
 
   function onRunEnd(r) {
+    resumeRunAfterSettings = false;
+    settingsReturnScreen = 'menuScreen';
     $('summaryTitle').textContent = r.reason;
     const sec=Math.max(0,Math.ceil(r.timeLeft||0));
     $('summaryStats').innerHTML = `<div><span class="label">Capturas</span><strong>${r.captures}</strong></div><div><span class="label">Monedas ganadas</span><strong>${r.coins}</strong></div><div><span class="label">Balls restantes</span><strong>${r.balls}</strong></div><div><span class="label">Tiempo restante</span><strong>${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}</strong></div>`;
@@ -149,6 +279,11 @@
 
   function matchesDexFilters(s) {
     const d=save.dex[s.id];
+
+    if (dexFilterState.region && NS.regionForSpecies(s) !== dexFilterState.region) {
+      return false;
+    }
+
     const q=dexFilterState.search.trim().toLocaleLowerCase('es');
     if(q){
       const number=String(s.id);
@@ -196,15 +331,236 @@
       count.innerHTML = d ? `Capturados: ${d.count}${d.shiny ? ` · <span class="shiny-star">★ ${d.shiny}</span>` : ''}` : 'No registrado';
       card.appendChild(count);
 
-      const preview = { canvas, species: s, shiny: false, silhouette: !d };
+      const preview = {
+        canvas,
+        species: s,
+        shiny: false,
+        silhouette: !d
+      };
+
       dexCanvases.push(preview);
+
       if (d) {
-        const variants = document.createElement('div'); variants.className = 'dex-variants';
-        const normalBtn = document.createElement('button'); normalBtn.type='button'; normalBtn.className='active'; normalBtn.textContent='Normal';
-        const shinyBtn = document.createElement('button'); shinyBtn.type='button'; shinyBtn.textContent=d.shiny>0?'★ Shiny':'★ Shiny 🔒'; shinyBtn.disabled=!(d.shiny>0);
-        normalBtn.onclick=()=>{preview.shiny=false;normalBtn.classList.add('active');shinyBtn.classList.remove('active');};
-        shinyBtn.onclick=()=>{if(!d.shiny)return;preview.shiny=true;shinyBtn.classList.add('active');normalBtn.classList.remove('active');};
-        variants.append(normalBtn,shinyBtn);card.appendChild(variants);
+        // Migración visual para saves anteriores al sistema de formas.
+        const capturedForms = d.forms || {
+          default:{
+            count:d.count || 0,
+            shiny:d.shiny || 0,
+            name:'Normal'
+          }
+        };
+
+        const allForms =
+          NS.getSpeciesForms
+            ? NS.getSpeciesForms(s)
+            : [{
+                key:'default',
+                name:'Normal',
+                isDefault:true
+              }];
+
+        const formsRow =
+          document.createElement('div');
+
+        formsRow.className =
+          'dex-form-variants';
+
+        const formsLabel =
+          document.createElement('div');
+
+        formsLabel.className =
+          'dex-form-label';
+
+        const capturedFormCount =
+          allForms.filter(form =>
+            (capturedForms[form.key]?.count || 0) > 0
+          ).length;
+
+        formsLabel.textContent =
+          `Formas ${capturedFormCount}/${allForms.length}`;
+
+        card.appendChild(formsLabel);
+
+        let selectedFormKey = 'default';
+
+        // Si el save antiguo no tiene default explícito, cuenta como capturada.
+        const defaultCaptured =
+          (capturedForms.default?.count || d.count || 0) > 0;
+
+        if (!defaultCaptured) {
+          const firstCaptured =
+            allForms.find(form =>
+              (capturedForms[form.key]?.count || 0) > 0
+            );
+
+          if (firstCaptured) {
+            selectedFormKey =
+              firstCaptured.key;
+          }
+        }
+
+        const shinyRow =
+          document.createElement('div');
+
+        shinyRow.className =
+          'dex-variants';
+
+        const normalBtn =
+          document.createElement('button');
+
+        normalBtn.type='button';
+        normalBtn.className='active';
+        normalBtn.textContent='Normal';
+
+        const shinyBtn =
+          document.createElement('button');
+
+        shinyBtn.type='button';
+
+        function selectedFormEntry() {
+          if (
+            selectedFormKey === 'default' &&
+            !d.forms
+          ) {
+            return {
+              count:d.count || 0,
+              shiny:d.shiny || 0
+            };
+          }
+
+          return capturedForms[selectedFormKey] || {
+            count:0,
+            shiny:0
+          };
+        }
+
+        function refreshShinyButton() {
+          const formEntry =
+            selectedFormEntry();
+
+          const hasShiny =
+            (formEntry.shiny || 0) > 0;
+
+          shinyBtn.textContent =
+            hasShiny
+              ? '★ Shiny'
+              : '★ Shiny 🔒';
+
+          shinyBtn.disabled =
+            !hasShiny;
+
+          if (
+            preview.shiny &&
+            !hasShiny
+          ) {
+            preview.shiny=false;
+            normalBtn.classList.add('active');
+            shinyBtn.classList.remove('active');
+          }
+        }
+
+        normalBtn.onclick=()=>{
+          preview.shiny=false;
+          normalBtn.classList.add('active');
+          shinyBtn.classList.remove('active');
+        };
+
+        shinyBtn.onclick=()=>{
+          if (
+            !(selectedFormEntry().shiny > 0)
+          ) {
+            return;
+          }
+
+          preview.shiny=true;
+          shinyBtn.classList.add('active');
+          normalBtn.classList.remove('active');
+        };
+
+        for (const form of allForms) {
+          const formEntry =
+            form.key === 'default' && !d.forms
+              ? {
+                  count:d.count || 0,
+                  shiny:d.shiny || 0
+                }
+              : capturedForms[form.key];
+
+          const captured =
+            (formEntry?.count || 0) > 0;
+
+          const button =
+            document.createElement('button');
+
+          button.type='button';
+          button.className =
+            'dex-form-button' +
+            (form.key === selectedFormKey
+              ? ' active'
+              : '');
+
+          button.textContent =
+            captured
+              ? form.name
+              : `${form.name} 🔒`;
+
+          button.disabled =
+            !captured;
+
+          button.onclick=()=>{
+            if (!captured) return;
+
+            selectedFormKey =
+              form.key;
+
+            preview.species =
+              NS.formVariantForSpecies
+                ? NS.formVariantForSpecies(
+                    s,
+                    form.key
+                  )
+                : s;
+
+            preview.shiny=false;
+
+            for (
+              const other of
+              formsRow.querySelectorAll(
+                '.dex-form-button'
+              )
+            ) {
+              other.classList.remove('active');
+            }
+
+            button.classList.add('active');
+            normalBtn.classList.add('active');
+            shinyBtn.classList.remove('active');
+
+            refreshShinyButton();
+          };
+
+          formsRow.appendChild(button);
+        }
+
+        // Inicializa el preview en la primera forma capturada disponible.
+        preview.species =
+          NS.formVariantForSpecies
+            ? NS.formVariantForSpecies(
+                s,
+                selectedFormKey
+              )
+            : s;
+
+        refreshShinyButton();
+
+        card.appendChild(formsRow);
+
+        shinyRow.append(
+          normalBtn,
+          shinyBtn
+        );
+
+        card.appendChild(shinyRow);
       }
       grid.appendChild(card);
     }
@@ -214,9 +570,41 @@
     dexAnimationId = requestAnimationFrame(drawDexLoop);
   }
 
+  function buildRegionTabs() {
+    const container = $('dexRegionTabs');
+    if (!container || !NS.REGIONS) return;
+
+    container.innerHTML = '';
+
+    for (const region of NS.REGIONS) {
+      const unlocked = NS.isRegionUnlocked(save, region.id);
+      const button = document.createElement('button');
+
+      button.type = 'button';
+      button.className =
+        'region-tab' +
+        (dexFilterState.region === region.id ? ' active' : '') +
+        (!unlocked ? ' locked' : '');
+
+      button.textContent = unlocked
+        ? region.name
+        : `${region.name} 🔒`;
+
+      button.disabled = !unlocked;
+
+      button.onclick = () => {
+        dexFilterState.region = region.id;
+        buildRegionTabs();
+        rebuildDexCards();
+      };
+
+      container.appendChild(button);
+    }
+  }
+
   function buildDex() {
     dexSprites = new NS.SpriteRepository();
-    dexFilterState={search:'',status:'all',rarity:'all',habitat:'all',type:'all'};
+    dexFilterState={region:'kanto',search:'',status:'all',rarity:'all',habitat:'all',type:'all'};
     $('dexSearch').value=''; $('dexStatusFilter').value='all'; $('dexRarityFilter').value='all';
     const habitatSel=$('dexHabitatFilter');
     habitatSel.innerHTML='<option value="all">Todos los biomas</option>'+NS.HABITAT_ORDER.map(id=>`<option value="${id}">${NS.HABITATS[id].name}</option>`).join('');
@@ -224,79 +612,172 @@
     const typeSel=$('dexTypeFilter');
     typeSel.innerHTML='<option value="all">Todos los tipos</option>'+types.map(t=>`<option value="${t}">${NS.TYPE_NAMES[t]||t}</option>`).join('');
     habitatSel.value='all';typeSel.value='all';
+    buildRegionTabs();
     rebuildDexCards();
+  }
+
+
+  const SHOP_CATEGORIES = [
+    {
+      id:'trainer',
+      title:'Entrenador y equipo',
+      description:'Capacidad, suministros y habilidades directas del jugador.',
+      items:['balls','supplies','capture','stoneGathering','throwCooldown']
+    },
+    {
+      id:'safari',
+      title:'Expedición Safari',
+      description:'Duración, movilidad, rastreo, permisos, hábitats y acceso regional.',
+      items:['steps','time','fleeTime','swimSpeed','habitatLicense','regionAccess']
+    },
+    {
+      id:'research',
+      title:'Investigación y colección',
+      description:'Herramientas para completar Pokédex, Shinydex y localizar especies.',
+      items:['shinyCharm','captureScanner']
+    }
+  ];
+
+  function shopCategoryFor(itemId) {
+    return SHOP_CATEGORIES.find(
+      category => category.items.includes(itemId)
+    ) || {
+      id:'other',
+      title:'Otras mejoras',
+      description:'',
+      items:[itemId]
+    };
   }
 
   function buildShop() {
     $('shopCoins').textContent = save.coins;
+
     const grid = $('shopGrid');
     grid.innerHTML = '';
-    for (const item of NS.SHOP_ITEMS) {
-      const lv = save.upgrades[item.id] || 0;
-      const cost = NS.getUpgradeCost(item, lv);
-      const maxed = lv >= item.max;
-      let locked = false;
-      let unlockText = '';
-      if (!maxed && item.unlockDexFractions?.length) {
-        const fraction = item.unlockDexFractions[Math.min(lv, item.unlockDexFractions.length - 1)];
-        const required = Math.ceil(NS.SPECIES.length * fraction);
-        const current = caughtSpeciesCount();
-        locked = current < required;
-        unlockText = `<div class="level">Desbloqueo: ${current}/${required} especies registradas</div>`;
+    grid.className = 'shop-categories';
+
+    for (const category of SHOP_CATEGORIES) {
+      const section = document.createElement('section');
+      section.className = 'shop-category';
+
+      const head = document.createElement('div');
+      head.className = 'shop-category-head';
+      head.innerHTML = `
+        <h3>${category.title}</h3>
+        <p>${category.description}</p>
+      `;
+
+      const cards = document.createElement('div');
+      cards.className = 'shop-grid';
+
+      const categoryItems = NS.SHOP_ITEMS.filter(
+        item => shopCategoryFor(item.id).id === category.id
+      );
+
+      for (const item of categoryItems) {
+        const lv = save.upgrades[item.id] || 0;
+        const cost = NS.getUpgradeCost(item, lv);
+        const maxed = lv >= item.max;
+
+        let displayName = item.name;
+        let displayDesc = item.desc;
+
+        if (item.id === 'regionAccess') {
+          const nextRegion = NS.nextLockedRegion(save);
+
+          if (nextRegion) {
+            displayName = `Acceso a ${nextRegion.name}`;
+            displayDesc =
+              `Desbloquea la región de ${nextRegion.name}. ` +
+              `El progreso regional queda guardado permanentemente.`;
+          } else {
+            displayName = 'Todas las regiones desbloqueadas';
+            displayDesc =
+              'Has desbloqueado todas las regiones configuradas.';
+          }
+        }
+
+        let locked = false;
+        let unlockText = '';
+
+        if (!maxed && item.unlockDexFractions?.length) {
+          const fraction =
+            item.unlockDexFractions[
+              Math.min(
+                lv,
+                item.unlockDexFractions.length - 1
+              )
+            ];
+
+          const kantoSpecies = NS.SPECIES.filter(
+            s => NS.regionForSpecies(s) === 'kanto'
+          );
+
+          const required =
+            Math.ceil(kantoSpecies.length * fraction);
+
+          const current =
+            kantoSpecies.filter(
+              s => save.dex[s.id]?.count > 0
+            ).length;
+
+          locked = current < required;
+
+          unlockText =
+            `<div class="level">Desbloqueo: ` +
+            `${current}/${required} especies registradas</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'shop-card';
+
+        const buttonLabel =
+          maxed
+            ? 'Máximo'
+            : locked
+              ? 'Bloqueado'
+              : `Comprar · ${cost} monedas`;
+
+        card.innerHTML = `
+          <h3>${displayName}</h3>
+          <p>${displayDesc}</p>
+          <div class="level">Nivel ${lv}/${item.max}</div>
+          ${unlockText}
+          <button ${maxed || locked ? 'disabled' : ''}>
+            ${buttonLabel}
+          </button>
+        `;
+
+        card.querySelector('button').onclick = () => {
+          if (
+            maxed ||
+            locked ||
+            save.coins < cost
+          ) {
+            return;
+          }
+
+          save.coins -= cost;
+          save.upgrades[item.id] = lv + 1;
+
+          NS.Storage.save(save);
+          NS.Audio?.sfx('coin',.92);
+
+          buildShop();
+          refreshMenu();
+
+  window.addEventListener('safari-regions-ready', () => {
+    refreshMenu();
+  });
+        };
+
+        cards.appendChild(card);
       }
-      const card = document.createElement('div');
-      card.className = 'shop-card';
-      const buttonLabel = maxed ? 'Máximo' : locked ? 'Bloqueado' : `Comprar · ${cost} monedas`;
-      card.innerHTML = `<h3>${item.name}</h3><p>${item.desc}</p><div class="level">Nivel ${lv}/${item.max}</div>${unlockText}<button ${(maxed||locked) ? 'disabled' : ''}>${buttonLabel}</button>`;
-      card.querySelector('button').onclick = () => {
-        if (maxed || locked || save.coins < cost) return;
-        save.coins -= cost;
-        save.upgrades[item.id] = lv + 1;
-        NS.Storage.save(save);
-        NS.Audio?.sfx('coin',.92);
-        buildShop();
-        refreshMenu();
-      };
-      grid.appendChild(card);
+
+      section.appendChild(head);
+      section.appendChild(cards);
+      grid.appendChild(section);
     }
-  }
-
-  function fileToDataUrl(file) {
-    return new Promise((resolve, reject) => {
-      if (!file) return resolve('');
-      if (file.type && file.type !== 'image/png') return reject(new Error(`${file.name}: debe ser un PNG.`));
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result || ''));
-      reader.onerror = () => reject(new Error(`No se pudo leer ${file.name}.`));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function importTrainerPack() {
-    const f1 = $('trainerSet1Input').files?.[0];
-    const f2 = $('trainerSet2Input').files?.[0];
-    if (!f1 && !f2) {
-      $('trainerPackStatus').textContent = 'Selecciona OpenmonSpriteSet1.png y/o OpenmonSpriteSet2.png antes de importar.';
-      return;
-    }
-
-    $('trainerPackStatus').textContent = 'Importando pack...';
-    try {
-      const [set1, set2] = await Promise.all([fileToDataUrl(f1), fileToDataUrl(f2)]);
-      if (set1) save.profile.trainerSheets.set1 = set1;
-      if (set2) save.profile.trainerSheets.set2 = set2;
-      NS.Storage.save(save);
-      await buildProfile();
-    } catch (e) {
-      $('trainerPackStatus').textContent = e.message || 'No se pudo importar el pack.';
-    }
-  }
-
-  function clearTrainerPack() {
-    save.profile.trainerSheets = { set1: '', set2: '' };
-    save.profile.trainerId = 0;
-    NS.Storage.save(save);
-    buildProfile();
   }
 
   function drawProfileLoop(t) {
@@ -309,7 +790,7 @@
 
   async function buildProfile() {
     stopProfileAnimation();
-    $('profileDex').textContent = `${caughtSpeciesCount()} / ${NS.SPECIES.length}`;
+    $('profileDex').textContent = `${caughtUnlockedSpeciesCount()} / ${unlockedSpeciesList().length}`;
     $('profileCaptures').textContent = save.totalCaptures || 0;
     $('profileShinies').textContent = shinyTotal();
     $('profileRuns').textContent = save.runs || 0;
@@ -323,19 +804,21 @@
 
     grid.innerHTML = '';
     profileCards = [];
-    const imported = profileRepo.hasOpenmonPack();
-    const count = imported ? profileRepo.count : 1;
 
-    if (imported) {
-      $('trainerPackStatus').textContent = `Pack cargado: ${count} entrenadores disponibles. El atlas Openmon se recorta en frames fijos de 18×26 px.`;
-      if (save.profile.trainerId >= count) save.profile.trainerId = 0;
-    } else {
-      $('trainerPackStatus').textContent = profileRepo.error
-        ? `${profileRepo.error} Se usa el entrenador de respaldo.`
-        : 'Pack Openmon todavía no importado. Se usa temporalmente el entrenador de respaldo.';
-      save.profile.trainerId = 0;
+    const count = profileRepo.count;
+
+    if (!count) {
+      const error = document.createElement('div');
+      error.className = 'trainer-loading';
+      error.textContent = profileRepo.error || 'No se pudieron cargar los entrenadores incluidos.';
+      grid.appendChild(error);
+      return;
     }
-    NS.Storage.save(save);
+
+    if (save.profile.trainerId >= count) {
+      save.profile.trainerId = 0;
+      NS.Storage.save(save);
+    }
 
     for (let i = 0; i < count; i++) {
       const card = document.createElement('button');
@@ -348,7 +831,7 @@
       card.appendChild(canvas);
 
       const label = document.createElement('span');
-      label.textContent = imported ? `Entrenador ${String(i + 1).padStart(2, '0')}` : 'Entrenador de respaldo';
+      label.textContent = `Entrenador ${String(i + 1).padStart(2, '0')}`;
       card.appendChild(label);
 
       if (i === save.profile.trainerId) {
@@ -388,11 +871,24 @@
   $('dexHabitatFilter').addEventListener('change', e => { dexFilterState.habitat=e.target.value; rebuildDexCards(); });
   $('dexTypeFilter').addEventListener('change', e => { dexFilterState.type=e.target.value; rebuildDexCards(); });
 
-  $('newRunBtn').onclick = newRun;
-  $('pokedexBtn').onclick = () => { buildDex(); show('pokedexScreen'); };
+  $('cancelRegionSelectBtn')?.addEventListener('click', () => {
+    $('regionSelectOverlay')?.classList.add('hidden');
+    $('regionSelectOverlay')?.setAttribute('aria-hidden','true');
+  });
+
+  $('newRunBtn').onclick = async () => {
+    await NS.ensureAllRegionsReady?.();
+    newRun();
+  };
+  $('pokedexBtn').onclick = async () => {
+    await NS.ensureAllRegionsReady?.();
+    buildDex();
+    show('pokedexScreen');
+  };
   $('shopBtn').onclick = () => { buildShop(); show('shopScreen'); };
 
   const openGameProfile = async () => {
+    await NS.ensureAllRegionsReady?.();
     $('accountCloseBtn')?.click();
     show('profileScreen');
     await buildProfile();
@@ -401,6 +897,18 @@
   const openSettings = () => {
     $('accountCloseBtn')?.click();
     refreshAudioSettings();
+
+    const current = getActiveScreenId();
+    settingsReturnScreen = current === 'settingsScreen' ? settingsReturnScreen : current;
+
+    if (current === 'gameScreen' && game?.running) {
+      resumeRunAfterSettings = !game.paused;
+      game.pause?.();
+      show('settingsScreen', { preserveRun: true });
+      return;
+    }
+
+    resumeRunAfterSettings = false;
     show('settingsScreen');
   };
 
@@ -408,15 +916,26 @@
   $('accountSettingsBtn').onclick = openSettings;
   $('settingsTopBtn').onclick = openSettings;
 
-  $('importTrainerPackBtn').onclick = importTrainerPack;
-  $('clearTrainerPackBtn').onclick = clearTrainerPack;
   $('summaryBackBtn').onclick = () => {
+    disposeRunSilently();
     save = NS.Storage.load();
     refreshMenu();
     show('menuScreen');
   };
 
   document.querySelectorAll('.backBtn').forEach(b => b.onclick = () => {
+    const screenId = b.closest('.screen')?.id;
+
+    if (screenId === 'settingsScreen') {
+      const target = settingsReturnScreen || 'menuScreen';
+      const shouldResume = target === 'gameScreen' && resumeRunAfterSettings && game?.running;
+      show(target, { preserveRun: target === 'gameScreen' });
+      if (shouldResume) game.resume?.();
+      resumeRunAfterSettings = false;
+      settingsReturnScreen = 'menuScreen';
+      return;
+    }
+
     refreshMenu();
     show('menuScreen');
   });

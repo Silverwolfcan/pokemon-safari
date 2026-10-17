@@ -55,8 +55,6 @@
     const accountOverlay = document.getElementById("accountOverlay");
     const accountCloseBtn = document.getElementById("accountCloseBtn");
     const logoutBtn = document.getElementById("logoutBtn");
-    const accountGameProfileBtn = document.getElementById("accountGameProfileBtn");
-    const accountSettingsBtn = document.getElementById("accountSettingsBtn");
     const accountMessage = document.getElementById("accountMessage");
 
     if (!loginScreen || !menuScreen || !googleBtn || !guestBtn || !status) {
@@ -149,7 +147,7 @@
       if (!user || !accountOverlay) return;
 
       updateAccountUI(user);
-      accountMessage.textContent = "";
+      if (accountMessage) accountMessage.textContent = "";
       accountOverlay.classList.remove("hidden");
       accountOverlay.setAttribute("aria-hidden", "false");
     }
@@ -168,16 +166,31 @@
         case "auth/popup-closed-by-user":
           return "Has cerrado la ventana de Google antes de completar el acceso.";
         case "auth/popup-blocked":
-          return "El navegador ha bloqueado la ventana de Google. Permite ventanas emergentes para esta web.";
+          return "El navegador ha bloqueado la ventana de Google.";
         case "auth/unauthorized-domain":
           return "Este dominio no está autorizado en Firebase Authentication.";
         case "auth/network-request-failed":
-          return "No se ha podido conectar con Firebase. Comprueba tu conexión.";
+          return "No se ha podido conectar con Firebase.";
         case "auth/operation-not-allowed":
           return "Este método de acceso no está habilitado en Firebase.";
         default:
-          return "No se pudo completar la operación. Revisa la consola del navegador si el problema continúa.";
+          return "No se pudo completar la operación.";
       }
+    }
+
+    function withTimeout(promise, ms, label) {
+      let timer;
+
+      const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          const error = new Error(`${label} superó ${ms} ms`);
+          error.code = "sync-timeout";
+          reject(error);
+        }, ms);
+      });
+
+      return Promise.race([promise, timeout])
+        .finally(() => clearTimeout(timer));
     }
 
     googleBtn.addEventListener("click", async () => {
@@ -212,21 +225,24 @@
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && accountOverlay && !accountOverlay.classList.contains("hidden")) {
+      if (
+        event.key === "Escape" &&
+        accountOverlay &&
+        !accountOverlay.classList.contains("hidden")
+      ) {
         closeAccountPanel();
       }
     });
 
-
     logoutBtn?.addEventListener("click", async () => {
       logoutBtn.disabled = true;
-      accountMessage.textContent = "Cerrando sesión...";
+      if (accountMessage) accountMessage.textContent = "Cerrando sesión...";
 
       try {
         await NS.AuthService.logout();
         closeAccountPanel();
       } catch (error) {
-        accountMessage.textContent = readableError(error);
+        if (accountMessage) accountMessage.textContent = readableError(error);
       } finally {
         logoutBtn.disabled = false;
       }
@@ -248,11 +264,36 @@
         status.textContent = "Cargando progreso...";
 
         if (NS.CloudSave) {
-          const result = await NS.CloudSave.syncCurrentUser();
+          try {
+            /*
+              La sincronización de nube ya no puede bloquear indefinidamente
+              el acceso al menú. Si Firestore tarda más de 7 segundos, se entra
+              con el guardado local y la nube podrá volver a sincronizar después.
+            */
+            const result = await withTimeout(
+              NS.CloudSave.syncCurrentUser(),
+              7000,
+              "Sincronización de Firestore"
+            );
 
-          if (result.changed) {
-            window.location.reload();
-            return;
+            if (result?.changed) {
+              /*
+                Evitamos recargar la página: el save local ya ha sido sustituido
+                por el de nube. Recargar aquí podía provocar un bucle de login
+                si la comparación volvía a detectar diferencias.
+              */
+              console.info("[Pokémon Safari] Progreso de nube aplicado sin recargar.");
+            }
+          } catch (error) {
+            console.warn(
+              "[Pokémon Safari] La nube no respondió a tiempo. Se continúa con el guardado local.",
+              error
+            );
+
+            const saveStatus = document.getElementById("saveStatus");
+            if (saveStatus) {
+              saveStatus.textContent = "Guardado local · Nube pendiente";
+            }
           }
         }
 

@@ -16,45 +16,41 @@
 
       <div id="topProgressStats" class="top-progress-stats" aria-label="Progreso del jugador">
         <div class="progress-pill" title="Monedas">
-          <span class="progress-icon">●</span>
+          <span class="pixel-icon icon-coin" aria-hidden="true"></span>
           <span class="progress-label">Monedas</span>
           <strong id="topCoins">0</strong>
         </div>
 
         <div class="progress-pill" title="Pokédex">
-          <span class="progress-icon">▣</span>
+          <span class="pixel-icon icon-pokedex" aria-hidden="true"></span>
           <span class="progress-label">Pokédex</span>
           <strong id="topDex">0 / 151</strong>
         </div>
 
         <div class="progress-pill" title="Shinydex">
-          <span class="progress-icon shiny-progress-icon">★</span>
+          <span class="pixel-icon icon-shiny" aria-hidden="true"></span>
           <span class="progress-label">Shinydex</span>
           <strong id="topShinyDex">0 / 151</strong>
         </div>
 
         <div class="progress-pill" title="Tiempo total en expediciones">
-          <span class="progress-icon">◷</span>
+          <span class="pixel-icon icon-clock" aria-hidden="true"></span>
           <span class="progress-label">Tiempo</span>
           <strong id="topPlaytime">0 min</strong>
         </div>
       </div>
 
       <div class="topbar-actions">
-        <div class="top-pill save-pill" title="Estado de guardado">
-          <span class="top-pill-icon">☁</span>
-          <span id="saveStatus" class="save-status">Guardado local</span>
+        <div class="cloud-status-icon" title="Estado de guardado" aria-label="Estado de guardado">
+          <span class="pixel-icon icon-cloud" aria-hidden="true"></span>
+          <span id="saveStatus" class="visually-hidden">Guardado local</span>
         </div>
 
-        <span id="musicNow" class="music-now">Sin música</span>
+<span id="musicNow" class="music-now">Sin música</span>
 
-        <button id="audioToggleBtn" class="top-icon-btn audio-toggle" type="button" title="Activar o silenciar audio">
-          🔊
-        </button>
+        <button id="audioToggleBtn" class="top-icon-btn audio-toggle" type="button" title="Activar o silenciar audio"><span class="pixel-icon icon-speaker" aria-hidden="true"></span><span class="visually-hidden">Audio activado</span></button>
 
-        <button id="settingsTopBtn" class="top-icon-btn" type="button" title="Ajustes" aria-label="Abrir ajustes">
-          ⚙
-        </button>
+        <button id="settingsTopBtn" class="top-icon-btn" type="button" title="Ajustes" aria-label="Abrir ajustes"><span class="pixel-icon icon-settings" aria-hidden="true"></span><span class="visually-hidden">Ajustes</span></button>
 
         <button id="accountBtn" class="account-pill" type="button" aria-haspopup="dialog" aria-controls="accountPanel">
           <span id="accountAvatar" class="account-avatar">?</span>
@@ -90,17 +86,17 @@
 
           <div class="menu-buttons safari-menu-buttons">
             <button id="newRunBtn" class="primary menu-action">
-              <span class="menu-action-icon">▶</span>
+              <span class="menu-action-icon"><span class="pixel-icon icon-play" aria-hidden="true"></span></span>
               <span><strong>Nueva expedición</strong><small>Entra en la zona Safari</small></span>
             </button>
 
             <button id="pokedexBtn" class="menu-action">
-              <span class="menu-action-icon">▣</span>
+              <span class="menu-action-icon"><span class="pixel-icon icon-pokedex" aria-hidden="true"></span></span>
               <span><strong>Pokédex</strong><small>Consulta tus capturas</small></span>
             </button>
 
             <button id="shopBtn" class="menu-action">
-              <span class="menu-action-icon">⬆</span>
+              <span class="menu-action-icon"><span class="pixel-icon icon-shop" aria-hidden="true"></span></span>
               <span><strong>Tienda</strong><small>Mejora futuras expediciones</small></span>
             </button>
           </div>
@@ -112,18 +108,32 @@
           <canvas id="gameCanvas" width="1280" height="720"></canvas>
 
           <div id="hud" class="hud">
-            <div class="hud-box"><span>Poké Balls</span><strong id="ballsHud">0</strong></div>
-            <div class="hud-box"><span>Pasos</span><strong id="stepsHud">0</strong></div>
-            <div class="hud-box"><span>Tiempo</span><strong id="timeHud">0:00</strong></div>
-            <div class="hud-box habitat-hud"><span>Hábitat</span><strong id="habitatHud">Pradera</strong></div>
-            <div class="hud-box"><span>Herramienta</span><strong id="toolHud">Cebo</strong></div>
-            <div class="hud-box"><span>Cebo</span><strong id="baitHud">0</strong></div>
-            <div class="hud-box"><span>Piedras</span><strong id="rocksHud">0</strong></div>
-            <div class="hud-box"><span>Capturas</span><strong id="capturesHud">0</strong></div>
-          </div>
+            <div class="help-box">
+              <div class="help-title">AYUDA RÁPIDA</div>
+              <ul class="help-list">
+                <li><span>Mover</span><strong>WASD / Flechas</strong></li>
+                <li><span>Lanzar Poké Ball</span><strong>Click izq.</strong></li>
+                <li><span>Usar cebo o piedra</span><strong>Click der.</strong></li>
+                <li><span>Cambiar herramienta</span><strong>Rueda ratón</strong></li>
+                <li><span>Golpear nodos con !</span><strong>Piedra</strong></li>
+                <li><span>Pausar / salir</span><strong>ESC</strong></li>
+              </ul>
+            </div>
 
-          <div class="help-box">
-            WASD / Flechas: mover · Izq.: Poké Ball · Der.: cebo/piedra · Rueda: cambiar herramienta · Golpea nodos con ! usando piedra · Esc: abandonar
+            <div class="hud-top-center">
+              <div class="hud-box top-stat-box"><span><i class="pixel-icon icon-clock" aria-hidden="true"></i>Tiempo</span><strong id="timeHud">0:00</strong></div>
+              <div class="hud-box top-stat-box habitat-hud"><span><i class="pixel-icon icon-habitat" aria-hidden="true"></i>Hábitat</span><strong id="habitatHud">Pradera</strong></div>
+              <div class="hud-box top-stat-box"><span><i class="pixel-icon icon-capture" aria-hidden="true"></i>Capturados</span><strong id="capturesHud">0</strong></div>
+
+              <div class="hud-box hud-hidden-runtime" aria-hidden="true"><span><i class="pixel-icon icon-steps" aria-hidden="true"></i>Pasos</span><strong id="stepsHud">0</strong></div>
+              <div class="hud-box hud-hidden-runtime" aria-hidden="true"><span><i class="pixel-icon icon-tool" aria-hidden="true"></i>Herramienta</span><strong id="toolHud">Cebo</strong></div>
+            </div>
+
+            <div class="hud-bottom-center">
+              <div class="hud-box inventory-box"><span><i class="pixel-icon icon-ball" aria-hidden="true"></i>Poké Balls</span><strong id="ballsHud">0</strong></div>
+              <div class="hud-box inventory-box"><span><i class="pixel-icon icon-bait" aria-hidden="true"></i>Cebos</span><strong id="baitHud">0</strong></div>
+              <div class="hud-box inventory-box"><span><i class="pixel-icon icon-rock" aria-hidden="true"></i>Piedras</span><strong id="rocksHud">0</strong></div>
+            </div>
           </div>
 
           <div id="chargeBar" class="charge hidden"><div id="chargeFill"></div></div>
@@ -138,7 +148,11 @@
               <h2>Pokédex de Kanto</h2>
               <p id="dexIntro">Especies disponibles en este prototipo.</p>
             </div>
-            <button class="backBtn">Volver</button>
+            <button class="backBtn"><span class="pixel-icon icon-back" aria-hidden="true"></span>Volver</button>
+          </div>
+          <div class="region-filter-block">
+            <span class="region-filter-title">Región</span>
+            <div id="dexRegionTabs" class="region-tabs"></div>
           </div>
           <div class="dex-toolbar">
             <input id="dexSearch" class="dex-search" type="search" placeholder="Buscar por nombre o nº..." autocomplete="off" />
@@ -167,7 +181,7 @@
         <div class="panel wide-panel">
           <div class="section-head">
             <div><h2>Tienda Safari</h2><p>Las mejoras son permanentes y se aplican a las siguientes expediciones.</p></div>
-            <button class="backBtn">Volver</button>
+            <button class="backBtn"><span class="pixel-icon icon-back" aria-hidden="true"></span>Volver</button>
           </div>
           <div class="shop-summary">Monedas: <strong id="shopCoins">0</strong></div>
           <div id="shopGrid" class="shop-grid"></div>
@@ -181,24 +195,14 @@
               <h2>Perfil de juego</h2>
               <p>Elige el aspecto de tu entrenador y consulta tus estadísticas permanentes.</p>
             </div>
-            <button class="backBtn">Volver</button>
+            <button class="backBtn"><span class="pixel-icon icon-back" aria-hidden="true"></span>Volver</button>
           </div>
 
           <div class="profile-layout">
             <div class="profile-main">
-              <div id="trainerPackPanel" class="trainer-pack-panel">
-                <div>
-                  <h3>Pack Openmon de entrenadores</h3>
-                  <p>El pack oficial contiene personajes animados CC0. Se importa una sola vez y se guarda localmente en el navegador.</p>
-                </div>
-                <div class="pack-actions">
-                  <a id="openmonLink" class="button-link" href="https://screensmith.itch.io/openmon-npc-sprites-set-1" target="_blank" rel="noopener">Abrir pack oficial</a>
-                  <label class="file-label">Set 1<input id="trainerSet1Input" type="file" accept="image/png" /></label>
-                  <label class="file-label">Set 2<input id="trainerSet2Input" type="file" accept="image/png" /></label>
-                  <button id="importTrainerPackBtn">Importar PNG seleccionados</button>
-                  <button id="clearTrainerPackBtn" class="ghost">Quitar pack importado</button>
-                </div>
-                <div id="trainerPackStatus" class="pack-status"></div>
+              <div class="trainer-library-intro">
+                <h3>Elige tu entrenador</h3>
+                <p>Todos los entrenadores están incluidos en el juego. Selecciona uno y se guardará automáticamente en tu perfil.</p>
               </div>
 
               <h3>Entrenador seleccionado</h3>
@@ -222,7 +226,7 @@
         <div class="panel settings-panel">
           <div class="section-head">
             <div><h2>Ajustes de sonido</h2><p>Los cambios se guardan automáticamente.</p></div>
-            <button class="backBtn">Volver</button>
+            <button class="backBtn"><span class="pixel-icon icon-back" aria-hidden="true"></span>Volver</button>
           </div>
           <div class="audio-settings-grid">
             <label><span>Volumen global</span><strong id="masterVolumeValue">85%</strong><input id="masterVolumeSlider" type="range" min="0" max="100" step="1" /></label>
@@ -244,6 +248,46 @@
         </div>
       </section>
     </main>
+  </div>
+
+
+  <!-- Pausa de expedición -->
+  <div id="pauseOverlay" class="modal-overlay hidden" aria-hidden="true">
+    <div class="game-modal pause-modal" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+      <span class="modal-kicker">EXPEDICIÓN EN PAUSA</span>
+      <h2 id="pauseTitle">Pausa</h2>
+      <p>La expedición está detenida.</p>
+      <div class="modal-actions">
+        <button id="resumeRunBtn" class="primary" type="button">Continuar</button>
+        <button id="abandonRunBtn" class="danger solid-danger" type="button">Abandonar expedición</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmación de abandono -->
+  <div id="abandonConfirmOverlay" class="modal-overlay hidden" aria-hidden="true">
+    <div class="game-modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="abandonTitle">
+      <span class="modal-kicker danger-text">CONFIRMAR</span>
+      <h2 id="abandonTitle">¿Abandonar la expedición?</h2>
+      <p>Conservarás todas las capturas y monedas obtenidas hasta ahora. Solo terminarás la expedición actual.</p>
+      <div class="modal-actions">
+        <button id="cancelAbandonBtn" type="button">Cancelar</button>
+        <button id="confirmAbandonBtn" class="danger solid-danger" type="button">Sí, abandonar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selector de región -->
+  <div id="regionSelectOverlay" class="modal-overlay hidden" aria-hidden="true">
+    <div class="game-modal region-modal" role="dialog" aria-modal="true" aria-labelledby="regionSelectTitle">
+      <span class="modal-kicker">DESTINO SAFARI</span>
+      <h2 id="regionSelectTitle">Elige una región</h2>
+      <p>En cada región solo aparecerán Pokémon pertenecientes a esa Pokédex regional.</p>
+      <div id="runRegionGrid" class="run-region-grid"></div>
+      <div class="modal-actions">
+        <button id="cancelRegionSelectBtn" type="button">Cancelar</button>
+      </div>
+    </div>
   </div>
 
   <!-- Panel de cuenta -->
@@ -277,8 +321,8 @@
       </div>
 
       <div class="account-actions">
-        <button id="accountGameProfileBtn" type="button">Perfil de juego</button>
-        <button id="accountSettingsBtn" type="button">Ajustes</button>
+        <button id="accountGameProfileBtn" type="button"><span class="pixel-icon icon-profile" aria-hidden="true"></span>Perfil de juego</button>
+        <button id="accountSettingsBtn" type="button"><span class="pixel-icon icon-settings" aria-hidden="true"></span>Ajustes</button>
         <button id="resetBtn" class="danger ghost" type="button">Borrar progreso</button>
         <button id="logoutBtn" class="danger" type="button">Cerrar sesión</button>
       </div>
@@ -295,6 +339,10 @@
   <!-- Configuración y guardado -->
   <script src="js/firebase-config.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/johto-data.js"></script>
+  <script src="js/local-sprite-source.js"></script>
+  <script src="js/all-regions-data.js"></script>
+  <script src="js/region-system.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/firebase-storage.js"></script>
   <script src="js/firebase-auth.js"></script>
@@ -302,10 +350,28 @@
   <!-- Juego -->
   <script src="js/audio.js"></script>
   <script src="js/sprites.js"></script>
+  <script src="js/sprite-fallback.js"></script>
   <script src="js/trainers.js"></script>
+  <script src="js/terrain-themes.js"></script>
+  <script src="js/habitat-field.js"></script>
+  <script src="js/terrain-renderer.js"></script>
+  <script src="js/prop-themes.js"></script>
+  <script src="js/prop-system.js"></script>
+  <script src="js/prop-atlas.js"></script>
+  <script src="js/prop-renderer.js"></script>
   <script src="js/world.js"></script>
   <script src="js/entities.js"></script>
+  <script src="js/player-tuning.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/region-gameplay.js"></script>
+  <script src="js/throw-controls.js"></script>
+  <script src="js/shiny-rewards.js"></script>
+  <script src="js/pause-system.js"></script>
+  <script src="js/gameplay-fixes.js"></script>
+  <script src="js/depth-render.js"></script>
+  <script src="js/water-ui.js"></script>
+  <script src="js/aim-ui.js"></script>
+  <script src="js/run-polish.js"></script>
   <script src="js/ui.js"></script>
 </body>
 </html>
